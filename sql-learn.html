@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive SQL Guide for Sakila</title>
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The SPA uses a two-column layout. A fixed sidebar on the left serves as the main navigation, listing all 10 parts of the SQL guide, plus two new interactive LLM features and a SQL practice area. The main content area on the right dynamically displays the selected section's content. This structure was chosen over a linear, single-page scroll because it provides a clear overview of all topics and allows for quick, non-linear access, ideal for learning and referencing. Questions are in accordions for active recall. New LLM features offer direct interaction for SQL explanation and query generation, enhancing the learning experience. The SQL Practice section provides a dedicated area for users to input queries and see mocked results, demonstrating the intended interactive learning flow. This design prioritizes ease of navigation, interactive learning, and practical utility. -->
+    <!-- Visualization & Content Choices: 
+        - [Report Info: All Parts] -> [Goal: Organize/Inform] -> [Viz/Method: Accordion List (HTML <details>/<summary>)] -> [Interaction: Click to expand/collapse] -> [Justification: Breaks down content into manageable Q&A pairs, encouraging active learning.] -> [Library: Vanilla JS for navigation, HTML native for accordion]
+        - [Report Info: Part 3, Q6 - Count films per rating] -> [Goal: Compare/Inform] -> [Viz/Method: Bar Chart] -> [Interaction: Hover for tooltips] -> [Justification: Provides an immediate visual representation of a GROUP BY query, making the concept more tangible than text alone.] -> [Library: Chart.js]
+        - [Report Info: Part 4 - Join Types] -> [Goal: Explain Relationship] -> [Viz/Method: HTML/CSS Venn Diagram] -> [Interaction: Static visual aid] -> [Justification: A simple, universally understood visual to clarify a complex concept without external libraries.] -> [Library: None (Tailwind CSS)]
+        - [Report Info: All SQL code blocks] -> [Goal: Utility] -> [Viz/Method: "Copy" Button] -> [Interaction: Click to copy] -> [Justification: Improves user experience by allowing easy transfer of code to a SQL client.] -> [Library: Vanilla JS]
+        - [Report Info: Part 10 - Conceptual Explanations] -> [Goal: Inform] -> [Viz/Method: Styled Callout Boxes] -> [Interaction: None] -> [Justification: Visually separates theoretical text from practical code exercises, improving readability.] -> [Library: None (Tailwind CSS)]
+        - [Report Info: User SQL Query] -> [Goal: Explain] -> [Viz/Method: Textarea Input, Text Output] -> [Interaction: Submit for LLM explanation] -> [Justification: Provides on-demand, contextual explanations of SQL queries, aiding understanding.] -> [Library: Gemini API (gemini-2.0-flash)]
+        - [Report Info: Natural Language Request] -> [Goal: Generate SQL] -> [Viz/Method: Textarea Input, Text Output] -> [Interaction: Submit for LLM query generation] -> [Justification: Helps users translate conceptual needs into executable SQL, bridging the gap between thought and code.] -> [Library: Gemini API (gemini-2.0-flash)]
+        - [Report Info: User SQL Practice] -> [Goal: Practice/Validate] -> [Viz/Method: Textarea Input, "Run Query" button, "Compare Results" button, and dedicated display areas for "Your Results", "Correct Results", and "Comparison Status".] -> [Interaction: User types SQL, Clicks "Run Query" (mocked backend interaction to fetch user's result), Clicks "Compare Results" (mocked comparison logic to show match/mismatch).] -> [Justification: Provides hands-on practice and immediate (mocked) feedback on query output, a crucial part of learning SQL. Explicitly mocks backend interaction to address security/technical limitations of client-side database connections.] -> [Library: Vanilla JS for UI/Interaction and mocked logic.] -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        height: 350px;
+        max-height: 400px;
+      }
+      details > summary {
+        list-style: none;
+      }
+      details > summary::-webkit-details-marker {
+        display: none;
+      }
+      details[open] summary .arrow {
+        transform: rotate(90deg);
+      }
+      .code-block {
+        position: relative;
+      }
+      .copy-button {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        transition: all 0.2s ease-in-out;
+      }
+      .copy-button:hover {
+        transform: scale(1.05);
+      }
+      .result-box {
+        background-color: #f7fafc; /* stone-100 */
+        border: 1px solid #e2e8f0; /* stone-200 */
+        padding: 1rem;
+        border-radius: 0.375rem;
+        min-height: 5rem; /* Ensure visibility even if empty */
+        max-height: 200px; /* Limit height */
+        overflow-y: auto; /* Scroll for overflow */
+        white-space: pre-wrap; /* Preserve formatting */
+        font-family: "Inter", monospace; /* Monospace for code/results */
+        font-size: 0.875rem;
+      }
+    </style>
+  </head>
+  <body class="bg-stone-50 text-slate-800">
+    <div class="flex min-h-screen">
+      <!-- Sidebar Navigation -->
+      <aside
+        id="sidebar"
+        class="w-64 bg-white border-r border-stone-200 p-6 fixed h-full overflow-y-auto transition-transform -translate-x-full md:translate-x-0"
+      >
+        <h1 class="text-2xl font-bold text-teal-700 mb-8">SQL Guide</h1>
+        <nav id="main-nav" class="space-y-2">
+          <a
+            href="#"
+            data-target="part1"
+            class="nav-link block font-semibold text-slate-700 hover:text-teal-600 p-2 rounded-lg bg-teal-100/50"
+            >Part 1: Basic SELECT</a
+          >
+          <a
+            href="#"
+            data-target="part2"
+            class="nav-link block font-semibold text-slate-700 hover:text-teal-600 p-2 rounded-lg"
+            >Part 2: Ordering & Aliases</a
+          >
+          <a
+            href="#"
+            data-target="part3"
+            class="nav-link block font-semibold text-slate-700 hover:text-teal-600 p-2 rounded-lg"
+            >Part 3: Aggregates & GROUP BY</a
+          >
+          <a
+            href="#"
+            data-target="part4"
+            class="nav-link block font-semibold text-slate-700 hover:text-teal-600 p-2 rounded-lg"
+            >Part 4: Joins</a
+          >
+          <a
+            href="#"
+            data-target="part5"
+            class="nav-link block font-semibold text-slate-700 hover:text-teal-600 p-2 rounded-lg"
+            >Part 5: Subqueries & EXISTS</a
+          >
+          <a
+            href="#"
+            data-target="part6"
+            class="nav-link block font-semibold text-slate-700 hover:text-teal-600 p-2 rounded-lg"
+            >Part 6: Set Operations</a
+          >
+          <a
+            href="#"
+            data-target="part7"
+            class="nav-link block font-semibold text-slate-700 hover:text-teal-600 p-2 rounded-lg"
+            >Part 7: DDL</a
+          >
+          <a
+            href="#"
+            data-target="part8"
+            class="nav-link block font-semibold text-slate-700 hover:text-teal-600 p-2 rounded-lg"
+            >Part 8: DML</a
+          >
+          <a
+            href="#"
+            data-target="part9"
+            class="nav-link block font-semibold text-slate-700 hover:text-teal-600 p-2 rounded-lg"
+            >Part 9: Views & Procedures</a
+          >
+          <a
+            href="#"
+            data-target="part10"
+            class="nav-link block font-semibold text-slate-700 hover:text-teal-600 p-2 rounded-lg"
+            >Part 10: Advanced Concepts</a
+          >
+          <div class="border-t border-stone-200 mt-4 pt-4">
+            <h2
+              class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2"
+            >
+              LLM Tools
+            </h2>
+            <a
+              href="#"
+              data-target="llm-explainer"
+              class="nav-link block font-semibold text-slate-700 hover:text-teal-600 p-2 rounded-lg"
+              >✨ SQL Explainer</a
+            >
+            <a
+              href="#"
+              data-target="llm-generator"
+              class="nav-link block font-semibold text-slate-700 hover:text-teal-600 p-2 rounded-lg"
+              >✨ Natural Language to SQL</a
+            >
+          </div>
+          <div class="border-t border-stone-200 mt-4 pt-4">
+            <h2
+              class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2"
+            >
+              Practice
+            </h2>
+            <a
+              href="#"
+              data-target="sql-practice"
+              class="nav-link block font-semibold text-slate-700 hover:text-teal-600 p-2 rounded-lg"
+              >✍️ SQL Practice</a
+            >
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Mobile Header -->
+      <header
+        class="md:hidden sticky top-0 bg-white/80 backdrop-blur-sm border-b border-stone-200 p-4 w-full z-10"
+      >
+        <div class="flex items-center justify-between">
+          <h1 class="text-xl font-bold text-teal-700">SQL Guide</h1>
+          <button id="menu-toggle" class="p-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16m-7 6h7"
+              />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="flex-1 md:ml-64 p-6 md:p-10">
+        <div id="content-area" class="max-w-4xl mx-auto">
+          <!-- Part 1: Basic SELECT -->
+          <section id="part1" class="content-section">
+            <h2 class="text-3xl font-bold mb-2">
+              Part 1: Basic SELECT and WHERE Clauses
+            </h2>
+            <p class="text-slate-600 mb-8">
+              This section covers the most fundamental SQL commands. You'll
+              learn how to retrieve data from tables using `SELECT` and filter
+              those results using the `WHERE` clause to find specific
+              information.
+            </p>
+            <div class="space-y-4">
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  1. List all columns from the `actor` table.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT * FROM actor;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  2. Retrieve the first name and last name of all actors.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT first_name, last_name FROM actor;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  3. Find all customers whose first name is 'MARY'.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT * FROM customer WHERE first_name = 'MARY';</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  4. Find all films with a rating of 'PG-13'.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT title FROM film WHERE rating = 'PG-13';</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  5. List all films where the length is greater than 100
+                  minutes.<span class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT title, length FROM film WHERE length > 100;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <!-- Part 2: Ordering, Limiting, and Aliases -->
+          <section id="part2" class="content-section hidden">
+            <h2 class="text-3xl font-bold mb-2">
+              Part 2: Ordering, Limiting, and Aliases
+            </h2>
+            <p class="text-slate-600 mb-8">
+              Learn to organize your query results. This section covers sorting
+              data with `ORDER BY`, restricting the number of rows returned with
+              `LIMIT`, and renaming columns for clarity using aliases.
+            </p>
+            <div class="space-y-4">
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  1. List all actors, ordered by their last name in ascending
+                  order.<span class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT * FROM actor ORDER BY last_name ASC;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  2. Get the top 10 longest films.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT title, length FROM film ORDER BY length DESC LIMIT 10;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  3. Retrieve the titles of films whose rating is 'G' or
+                  'NC-17'.<span class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT title FROM film WHERE rating IN ('G', 'NC-17');</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  4. Find films with a `special_features` column containing
+                  'Trailers'.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT title FROM film WHERE special_features LIKE '%Trailers%';</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <!-- Part 3: Aggregate Functions -->
+          <section id="part3" class="content-section hidden">
+            <h2 class="text-3xl font-bold mb-2">
+              Part 3: Aggregate Functions and GROUP BY
+            </h2>
+            <p class="text-slate-600 mb-8">
+              This section introduces aggregate functions like `COUNT`, `AVG`,
+              `SUM`, `MIN`, and `MAX` to perform calculations on sets of rows.
+              You'll also learn to use `GROUP BY` to apply these functions to
+              subsets of data.
+            </p>
+            <div class="space-y-4">
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  1. Count the total number of actors.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT COUNT(*) FROM actor;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  2. Find the average rental rate of all films.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT AVG(rental_rate) FROM film;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  3. Count the number of films for each rating.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT rating, COUNT(*) AS number_of_films FROM film GROUP BY rating;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                  <h4 class="font-semibold mt-4 mb-2 text-center">
+                    Visual Result
+                  </h4>
+                  <div
+                    class="chart-container bg-white p-4 rounded-lg border border-stone-200"
+                  >
+                    <canvas id="ratingsChart"></canvas>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  4. Get the count of films released in each release year, but
+                  only for years with more than 50 films.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <p class="text-sm text-slate-600 mb-2">
+                    This query introduces the `HAVING` clause, which is used to
+                    filter groups created by `GROUP BY`.
+                  </p>
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT release_year, COUNT(*) AS film_count
+FROM film
+GROUP BY release_year
+HAVING COUNT(*) > 50;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <!-- Part 4: Joins -->
+          <section id="part4" class="content-section hidden">
+            <h2 class="text-3xl font-bold mb-2">Part 4: Joins</h2>
+            <p class="text-slate-600 mb-8">
+              Joins are essential for combining rows from two or more tables
+              based on a related column. This section covers various join types,
+              including `INNER JOIN` and `LEFT JOIN`, to retrieve comprehensive
+              datasets.
+            </p>
+            <div
+              class="bg-teal-50 border-l-4 border-teal-500 text-teal-800 p-4 rounded-r-lg mb-6"
+            >
+              <h4 class="font-bold">Visualizing Joins</h4>
+              <p class="text-sm">
+                The diagram shows how `INNER` and `LEFT` joins relate two tables
+                (A and B). `INNER JOIN` returns only the matching records in
+                both tables (the overlap). `LEFT JOIN` returns all records from
+                the left table (A) and the matched records from the right table
+                (B).
+              </p>
+              <div
+                class="flex justify-center items-center space-x-[-2rem] mt-3"
+              >
+                <div
+                  class="w-24 h-24 rounded-full bg-blue-300 border-2 border-blue-500 flex items-center justify-center font-bold text-blue-800 text-lg"
+                >
+                  <span class="ml-4">A</span>
+                </div>
+                <div
+                  class="w-24 h-24 rounded-full bg-red-300 border-2 border-red-500 flex items-center justify-center font-bold text-red-800 text-lg"
+                >
+                  <span class="mr-4">B</span>
+                </div>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  1. List actors and the titles of the films they acted in
+                  (`INNER JOIN`).<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT a.first_name, a.last_name, f.title
+FROM actor AS a
+INNER JOIN film_actor AS fa ON a.actor_id = fa.actor_id
+INNER JOIN film AS f ON fa.film_id = f.film_id;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  2. Get the customer's name and the city they live in.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT c.first_name, c.last_name, ci.city
+FROM customer AS c
+INNER JOIN address AS a ON c.address_id = a.address_id
+INNER JOIN city AS ci ON a.city_id = ci.city_id;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  3. Find all films that have never been rented (`LEFT
+                  JOIN`).<span class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT f.title
+FROM film AS f
+LEFT JOIN inventory AS i ON f.film_id = i.film_id
+WHERE i.film_id IS NULL;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  4. Find pairs of films that have the same length (`SELF
+                  JOIN`).<span class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT
+    f1.title AS film1_title,
+    f2.title AS film2_title,
+    f1.length
+FROM
+    film AS f1
+JOIN
+    film AS f2 ON f1.length = f2.length AND f1.film_id &lt; f2.film_id
+ORDER BY
+    f1.length, f1.title;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <!-- Part 5: Subqueries -->
+          <section id="part5" class="content-section hidden">
+            <h2 class="text-3xl font-bold mb-2">
+              Part 5: Subqueries and EXISTS
+            </h2>
+            <p class="text-slate-600 mb-8">
+              A subquery, or inner query, is a query nested inside another
+              query. They are powerful tools for performing complex filtering
+              and data retrieval that would be difficult with a single query.
+            </p>
+            <div class="space-y-4">
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  1. Find films with a rental rate greater than the
+                  average.<span class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT title, rental_rate
+FROM film
+WHERE rental_rate > (SELECT AVG(rental_rate) FROM film);</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  2. Get customers who rented 'ACADEMY DINOSAUR'.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT first_name, last_name FROM customer 
+WHERE customer_id IN (
+    SELECT customer_id FROM rental 
+    WHERE inventory_id IN (
+        SELECT inventory_id FROM inventory 
+        WHERE film_id = (SELECT film_id FROM film WHERE title = 'ACADEMY DINOSAUR')
+    )
+);</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  3. Select films that have never been rented, using `NOT
+                  EXISTS`.<span class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT f.title
+FROM film AS f
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM inventory AS i 
+    JOIN rental AS r ON i.inventory_id = r.inventory_id 
+    WHERE i.film_id = f.film_id
+);</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <!-- Part 6: Set Operations -->
+          <section id="part6" class="content-section hidden">
+            <h2 class="text-3xl font-bold mb-2">
+              Part 6: Set Operations (UNION)
+            </h2>
+            <p class="text-slate-600 mb-8">
+              Set operators like `UNION` are used to combine the result sets of
+              two or more `SELECT` statements. This section also demonstrates
+              how to simulate `INTERSECT` and `EXCEPT` in MySQL, which doesn't
+              have native support for them.
+            </p>
+            <div class="space-y-4">
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  1. Combine the first names of actors and customers (no
+                  duplicates).<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT first_name FROM actor
+UNION
+SELECT first_name FROM customer;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  2. Find films in both 'Action' and 'Comedy' (Simulate
+                  `INTERSECT`).<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>SELECT f.title
+FROM film AS f
+JOIN film_category fc1 ON f.film_id = fc1.film_id
+JOIN category c1 ON fc1.category_id = c1.category_id AND c1.name = 'Action'
+WHERE f.film_id IN (
+    SELECT fc2.film_id
+    FROM film_category fc2
+    JOIN category c2 ON fc2.category_id = c2.category_id AND c2.name = 'Comedy'
+);</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <!-- Part 7: DDL -->
+          <section id="part7" class="content-section hidden">
+            <h2 class="text-3xl font-bold mb-2">
+              Part 7: DDL (Data Definition Language)
+            </h2>
+            <p class="text-slate-600 mb-8">
+              DDL statements are used to define and manage the database
+              structure. This includes creating (`CREATE`), modifying (`ALTER`),
+              and deleting (`DROP`) database objects like tables and indexes.
+              <strong class="text-red-600"
+                >Be cautious with these commands on a live database.</strong
+              >
+            </p>
+            <div class="space-y-4">
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  1. Create a new table named `movies_archive`.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>CREATE TABLE movies_archive (
+    movie_id INT PRIMARY KEY,
+    movie_title VARCHAR(255),
+    release_year YEAR,
+    archived_date DATE DEFAULT (CURRENT_DATE)
+);</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  2. Add a new column `notes` to the `movies_archive`
+                  table.<span class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>ALTER TABLE movies_archive ADD COLUMN notes TEXT;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  3. Drop the `movies_archive` table.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>DROP TABLE movies_archive;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <!-- Part 8: DML -->
+          <section id="part8" class="content-section hidden">
+            <h2 class="text-3xl font-bold mb-2">
+              Part 8: DML (Data Manipulation Language)
+            </h2>
+            <p class="text-slate-600 mb-8">
+              DML statements are used to manage the data within database
+              objects. Learn how to add new data with `INSERT`, modify existing
+              data with `UPDATE`, and remove data with `DELETE`.
+              <strong class="text-red-600"
+                >These commands permanently change data.</strong
+              >
+            </p>
+            <div class="space-y-4">
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  1. Insert a new actor named 'JOHNNY DEPP'.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>INSERT INTO actor (first_name, last_name) VALUES ('JOHNNY', 'DEPP');</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  2. Update the `rental_duration` of 'ACADEMY DINOSAUR' to 6
+                  days.<span class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>UPDATE film SET rental_duration = 6 WHERE title = 'ACADEMY DINOSAUR';</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  3. Delete the actor 'JOHNNY DEPP'.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>DELETE FROM actor WHERE first_name = 'JOHNNY' AND last_name = 'DEPP';</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <!-- Part 9: Views & Procedures -->
+          <section id="part9" class="content-section hidden">
+            <h2 class="text-3xl font-bold mb-2">
+              Part 9: Views, Stored Procedures, and Functions
+            </h2>
+            <p class="text-slate-600 mb-8">
+              Go beyond simple queries. A `VIEW` is a virtual table based on the
+              result-set of an SQL statement. A `STORED PROCEDURE` is a prepared
+              SQL code that you can save, so the code can be reused over and
+              over again.
+            </p>
+            <div class="space-y-4">
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  1. Create a view named `film_details`.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>CREATE VIEW film_details AS
+SELECT film_id, title, description, release_year, rating
+FROM film;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  2. Create a stored procedure to get a customer's rented
+                  films.<span class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>DELIMITER //
+CREATE PROCEDURE get_customer_films (IN cust_id INT)
+BEGIN
+    SELECT f.title
+    FROM customer AS c
+    JOIN rental AS r ON c.customer_id = r.customer_id
+    JOIN inventory AS i ON r.inventory_id = i.inventory_id
+    JOIN film AS f ON i.film_id = f.film_id
+    WHERE c.customer_id = cust_id;
+END //
+DELIMITER ;</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+              <details
+                class="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <summary
+                  class="p-4 cursor-pointer flex justify-between items-center font-semibold text-slate-800 hover:bg-stone-50"
+                >
+                  3. Call the stored procedure for `customer_id` 1.<span
+                    class="arrow transition-transform duration-200"
+                    >&#x276F;</span
+                  >
+                </summary>
+                <div class="p-4 border-t border-stone-200">
+                  <div class="code-block">
+                    <pre
+                      class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                    ><code>CALL get_customer_films(1);</code></pre>
+                    <button
+                      class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <!-- Part 10: Advanced Concepts -->
+          <section id="part10" class="content-section hidden">
+            <h2 class="text-3xl font-bold mb-2">Part 10: Advanced Concepts</h2>
+            <p class="text-slate-600 mb-8">
+              This section covers theoretical but crucial database concepts:
+              `TRANSACTIONS` for ensuring data integrity, `INDEXES` for
+              optimizing query performance, and the foundational `ACID`
+              properties that guarantee reliability.
+            </p>
+            <div class="space-y-6">
+              <div
+                class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm"
+              >
+                <h3 class="text-xl font-semibold text-teal-700 mb-2">
+                  Transactions (START TRANSACTION, COMMIT, ROLLBACK)
+                </h3>
+                <p class="text-slate-600 mb-4">
+                  A transaction bundles multiple SQL statements into a single,
+                  all-or-nothing operation. This ensures data integrity. For
+                  example, when transferring money, you debit one account and
+                  credit another. A transaction ensures both actions succeed or
+                  both fail together.
+                </p>
+                <div class="code-block">
+                  <pre
+                    class="bg-slate-800 text-white p-4 rounded-md text-sm overflow-x-auto"
+                  ><code>START TRANSACTION;
+UPDATE accounts SET balance = balance - 100 WHERE account_id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE account_id = 2;
+COMMIT; -- Or ROLLBACK; to undo the changes</code></pre>
+                  <button
+                    class="copy-button bg-slate-600 text-white text-xs px-2 py-1 rounded"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+              <div
+                class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm"
+              >
+                <h3 class="text-xl font-semibold text-teal-700 mb-2">
+                  Indexes
+                </h3>
+                <p class="text-slate-600">
+                  An index is a special lookup table that the database search
+                  engine can use to speed up data retrieval. Simply put, an
+                  index is a pointer to data in a table. An index in a database
+                  is very much like an index in the back of a book. Creating an
+                  index on a column used frequently in `WHERE` clauses can
+                  drastically improve query performance.
+                </p>
+              </div>
+              <div
+                class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm"
+              >
+                <h3 class="text-xl font-semibold text-teal-700 mb-2">
+                  ACID Properties
+                </h3>
+                <ul class="list-none space-y-3 text-slate-600">
+                  <li>
+                    <strong class="font-semibold text-slate-800"
+                      >Atomicity:</strong
+                    >
+                    Ensures that all operations within a transaction are
+                    completed; otherwise, the entire transaction is aborted and
+                    the database is left unchanged. It's an "all or nothing"
+                    principle.
+                  </li>
+                  <li>
+                    <strong class="font-semibold text-slate-800"
+                      >Consistency:</strong
+                    >
+                    Guarantees that a transaction brings the database from one
+                    valid state to another. Any transaction will not violate the
+                    database's structural integrity (e.g., constraints,
+                    triggers).
+                  </li>
+                  <li>
+                    <strong class="font-semibold text-slate-800"
+                      >Isolation:</strong
+                    >
+                    Ensures that concurrent execution of transactions results in
+                    a system state that would be obtained if transactions were
+                    executed serially. Each transaction is unaware of other
+                    concurrent transactions.
+                  </li>
+                  <li>
+                    <strong class="font-semibold text-slate-800"
+                      >Durability:</strong
+                    >
+                    Ensures that once a transaction has been committed, it will
+                    remain so, even in the event of power loss, crashes, or
+                    errors.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- LLM SQL Explainer Section -->
+          <section id="llm-explainer" class="content-section hidden">
+            <h2 class="text-3xl font-bold mb-2">✨ SQL Explainer</h2>
+            <p class="text-slate-600 mb-8">
+              Paste any SQL query here to get a plain English explanation. This
+              can help you understand complex queries or clarify syntax you're
+              unsure about.
+            </p>
+            <div
+              class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm"
+            >
+              <label for="sql-input" class="block text-lg font-semibold mb-2"
+                >Enter your SQL query:</label
+              >
+              <textarea
+                id="sql-input"
+                class="w-full p-3 border border-stone-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all mb-4 h-32 resize-y"
+                placeholder="e.g., SELECT film.title, category.name FROM film JOIN film_category ON film.film_id = film_category.film_id JOIN category ON film_category.category_id = category.category_id WHERE category.name = 'Horror';"
+              ></textarea>
+              <button
+                id="explain-sql-btn"
+                class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md transition-colors"
+              >
+                Explain SQL ✨
+              </button>
+              <div
+                id="explanation-output"
+                class="mt-6 p-4 bg-stone-100 rounded-md border border-stone-200 whitespace-pre-wrap"
+              >
+                Your explanation will appear here.
+              </div>
+            </div>
+          </section>
+
+          <!-- LLM Natural Language to SQL Section -->
+          <section id="llm-generator" class="content-section hidden">
+            <h2 class="text-3xl font-bold mb-2">✨ Natural Language to SQL</h2>
+            <p class="text-slate-600 mb-8">
+              Describe what you want to query in plain English, and the AI will
+              attempt to generate the corresponding SQL query for the Sakila
+              database. Remember to be specific!
+            </p>
+            <div
+              class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm"
+            >
+              <label for="nl-input" class="block text-lg font-semibold mb-2"
+                >Describe your query:</label
+              >
+              <textarea
+                id="nl-input"
+                class="w-full p-3 border border-stone-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all mb-4 h-32 resize-y"
+                placeholder="e.g., Show me the first name and last name of all actors who have appeared in films rated 'G'."
+              ></textarea>
+              <button
+                id="generate-sql-btn"
+                class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-md transition-colors"
+              >
+                Generate SQL ✨
+              </button>
+              <div
+                id="generated-sql-output"
+                class="mt-6 p-4 bg-stone-100 rounded-md border border-stone-200 whitespace-pre-wrap"
+              >
+                Your generated SQL query will appear here.
+              </div>
+            </div>
+          </section>
+
+          <!-- SQL Practice Section -->
+          <section id="sql-practice" class="content-section hidden">
+            <h2 class="text-3xl font-bold mb-2">✍️ SQL Practice Area</h2>
+            <p class="text-slate-600 mb-8">
+              Practice your SQL skills by typing your own queries here. The "Run
+              Query" button will simulate fetching results, and "Compare
+              Results" will simulate comparing your output with the correct
+              answer. **Note: This is a frontend simulation. Actual database
+              connection and query execution require a backend server for
+              security and functionality.**
+            </p>
+
+            <div
+              class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm mb-6"
+            >
+              <label
+                for="practice-sql-input"
+                class="block text-lg font-semibold mb-2"
+                >Your SQL Query:</label
+              >
+              <textarea
+                id="practice-sql-input"
+                class="w-full p-3 border border-stone-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all mb-4 h-40 resize-y"
+                placeholder="e.g., SELECT first_name, last_name FROM actor ORDER BY last_name;"
+              ></textarea>
+              <div class="flex space-x-4 mb-4">
+                <button
+                  id="run-query-btn"
+                  class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition-colors flex items-center"
+                >
+                  <span
+                    id="run-query-spinner"
+                    class="hidden animate-spin h-5 w-5 mr-2 border-b-2 border-white rounded-full"
+                  ></span>
+                  Run Query
+                </button>
+                <button
+                  id="compare-results-btn"
+                  class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-colors flex items-center"
+                >
+                  <span
+                    id="compare-results-spinner"
+                    class="hidden animate-spin h-5 w-5 mr-2 border-b-2 border-white rounded-full"
+                  ></span>
+                  Compare Results
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div>
+                  <h3 class="text-xl font-semibold mb-2">
+                    Your Query Results:
+                  </h3>
+                  <div id="your-results-output" class="result-box">
+                    Results from your query will appear here. (Simulated)
+                  </div>
+                </div>
+                <div>
+                  <h3 class="text-xl font-semibold mb-2">
+                    Correct Query Results:
+                  </h3>
+                  <div id="correct-results-output" class="result-box">
+                    Results from the correct answer will appear here.
+                    (Simulated)
+                  </div>
+                </div>
+              </div>
+              <div class="mt-6">
+                <h3 class="text-xl font-semibold mb-2">Comparison Status:</h3>
+                <div id="comparison-status-output" class="result-box font-bold">
+                  Comparison feedback will appear here after clicking "Compare
+                  Results". (Simulated)
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const navLinks = document.querySelectorAll(".nav-link");
+        const contentSections = document.querySelectorAll(".content-section");
+        const menuToggle = document.getElementById("menu-toggle");
+        const sidebar = document.getElementById("sidebar");
+
+        // Navigation handler
+        navLinks.forEach((link) => {
+          link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute("data-target");
+
+            contentSections.forEach((section) => {
+              section.classList.add("hidden");
+            });
+            document.getElementById(targetId).classList.remove("hidden");
+
+            navLinks.forEach((navLink) => {
+              navLink.classList.remove("bg-teal-100/50");
+            });
+            link.classList.add("bg-teal-100/50");
+
+            // Close sidebar on mobile after navigation
+            if (window.innerWidth < 768) {
+              sidebar.classList.add("-translate-x-full");
+            }
+            window.scrollTo(0, 0);
+          });
+        });
+
+        // Mobile menu toggle
+        menuToggle.addEventListener("click", () => {
+          sidebar.classList.toggle("-translate-x-full");
+        });
+
+        // Copy button handler
+        document.querySelectorAll(".copy-button").forEach((button) => {
+          button.addEventListener("click", (e) => {
+            const codeBlock = e.target.previousElementSibling;
+            const code = codeBlock.querySelector("code").innerText;
+            // Use document.execCommand('copy') as navigator.clipboard.writeText() may not work in some iFrame environments.
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = code;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempTextArea);
+
+            button.innerText = "Copied!";
+            setTimeout(() => {
+              button.innerText = "Copy";
+            }, 2000);
+          });
+        });
+
+        // Chart.js initialization
+        const ratingsChartCtx = document.getElementById("ratingsChart");
+        if (ratingsChartCtx) {
+          new Chart(ratingsChartCtx, {
+            type: "bar",
+            data: {
+              labels: ["G", "PG", "PG-13", "R", "NC-17"],
+              datasets: [
+                {
+                  label: "# of Films by Rating",
+                  data: [178, 194, 223, 195, 210], // Sample data from Sakila DB
+                  backgroundColor: [
+                    "rgba(75, 192, 192, 0.6)",
+                    "rgba(54, 162, 235, 0.6)",
+                    "rgba(255, 206, 86, 0.6)",
+                    "rgba(255, 99, 132, 0.6)",
+                    "rgba(153, 102, 255, 0.6)",
+                  ],
+                  borderColor: [
+                    "rgba(75, 192, 192, 1)",
+                    "rgba(54, 162, 235, 1)",
+                    "rgba(255, 206, 86, 1)",
+                    "rgba(255, 99, 132, 1)",
+                    "rgba(153, 102, 255, 1)",
+                  ],
+                  borderWidth: 1,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: {
+                    color: "#e5e7eb",
+                  },
+                },
+                x: {
+                  grid: {
+                    display: false,
+                  },
+                },
+              },
+              plugins: {
+                legend: {
+                  display: false,
+                },
+                title: {
+                  display: true,
+                  text: "Film Counts per Rating (Sakila DB)",
+                  font: {
+                    size: 16,
+                  },
+                },
+              },
+            },
+          });
+        }
+
+        // LLM SQL Explainer Logic
+        const sqlInput = document.getElementById("sql-input");
+        const explainSqlBtn = document.getElementById("explain-sql-btn");
+        const explanationOutput = document.getElementById("explanation-output");
+
+        explainSqlBtn.addEventListener("click", async () => {
+          const query = sqlInput.value.trim();
+          if (!query) {
+            explanationOutput.innerText =
+              "Please enter an SQL query to explain.";
+            return;
+          }
+
+          explanationOutput.innerText = "Loading explanation...";
+          explainSqlBtn.disabled = true;
+          explainSqlBtn.classList.add("opacity-50", "cursor-not-allowed");
+
+          try {
+            let chatHistory = [];
+            const prompt = `Explain the following SQL query in plain English, focusing on what it does and which tables/columns from the Sakila database it uses. Do not execute the query, just explain it:\n\n${query}`;
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            const response = await fetch(apiUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const result = await response.json();
+
+            if (
+              result.candidates &&
+              result.candidates.length > 0 &&
+              result.candidates[0].content &&
+              result.candidates[0].content.parts &&
+              result.candidates[0].content.parts.length > 0
+            ) {
+              const text = result.candidates[0].content.parts[0].text;
+              explanationOutput.innerText = text;
+            } else {
+              explanationOutput.innerText =
+                "Error: Could not get a valid explanation. Please try again.";
+            }
+          } catch (error) {
+            console.error("Error explaining SQL:", error);
+            explanationOutput.innerText =
+              "An error occurred while explaining the SQL query. Please check your network connection or try again later.";
+          } finally {
+            explainSqlBtn.disabled = false;
+            explainSqlBtn.classList.remove("opacity-50", "cursor-not-allowed");
+          }
+        });
+
+        // LLM Natural Language to SQL Logic
+        const nlInput = document.getElementById("nl-input");
+        const generateSqlBtn = document.getElementById("generate-sql-btn");
+        const generatedSqlOutput = document.getElementById(
+          "generated-sql-output"
+        );
+
+        generateSqlBtn.addEventListener("click", async () => {
+          const naturalLanguagePrompt = nlInput.value.trim();
+          if (!naturalLanguagePrompt) {
+            generatedSqlOutput.innerText =
+              "Please describe what SQL query you want to generate.";
+            return;
+          }
+
+          generatedSqlOutput.innerText = "Generating SQL query...";
+          generateSqlBtn.disabled = true;
+          generateSqlBtn.classList.add("opacity-50", "cursor-not-allowed");
+
+          try {
+            let chatHistory = [];
+            const prompt = `Based on the Sakila database schema (which contains tables like actor, film, customer, rental, etc.), write an SQL query that fulfills the following request:\n\n"${naturalLanguagePrompt}"\n\nProvide ONLY the SQL query, without any additional explanation or formatting like markdown code blocks.`;
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            const response = await fetch(apiUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const result = await response.json();
+
+            if (
+              result.candidates &&
+              result.candidates.length > 0 &&
+              result.candidates[0].content &&
+              result.candidates[0].content.parts &&
+              result.candidates[0].content.parts.length > 0
+            ) {
+              const text = result.candidates[0].content.parts[0].text.trim();
+              generatedSqlOutput.innerText = text;
+            } else {
+              generatedSqlOutput.innerText =
+                "Error: Could not generate a valid SQL query. Please try again with a more specific request.";
+            }
+          } catch (error) {
+            console.error("Error generating SQL:", error);
+            generatedSqlOutput.innerText =
+              "An error occurred while generating the SQL query. Please check your network connection or try again later.";
+          } finally {
+            generateSqlBtn.disabled = false;
+            generateSqlBtn.classList.remove("opacity-50", "cursor-not-allowed");
+          }
+        });
+
+        // SQL Practice Logic (Mocked)
+        const practiceSqlInput = document.getElementById("practice-sql-input");
+        const runQueryBtn = document.getElementById("run-query-btn");
+        const compareResultsBtn = document.getElementById(
+          "compare-results-btn"
+        );
+        const yourResultsOutput = document.getElementById(
+          "your-results-output"
+        );
+        const correctResultsOutput = document.getElementById(
+          "correct-results-output"
+        );
+        const comparisonStatusOutput = document.getElementById(
+          "comparison-status-output"
+        );
+        const runQuerySpinner = document.getElementById("run-query-spinner");
+        const compareResultsSpinner = document.getElementById(
+          "compare-results-spinner"
+        );
+
+        // Mock Data for a common query: SELECT first_name, last_name FROM actor ORDER BY last_name LIMIT 5;
+        const mockCorrectResults = [
+          ["ADAM", "GRANT"],
+          ["ADELE", "DUNST"],
+          ["ALAN", "ALBRIGHT"],
+          ["ALBERT", "JOHANSSON"],
+          ["ALEC", "BALDWIN"],
+        ];
+
+        const mockUserResults1 = [
+          // Correct order and data
+          ["ADAM", "GRANT"],
+          ["ADELE", "DUNST"],
+          ["ALAN", "ALBRIGHT"],
+          ["ALBERT", "JOHANSSON"],
+          ["ALEC", "BALDWIN"],
+        ];
+
+        const mockUserResults2 = [
+          // Different order
+          ["ADELE", "DUNST"],
+          ["ADAM", "GRANT"],
+          ["ALAN", "ALBRIGHT"],
+          ["ALEC", "BALDWIN"],
+          ["ALBERT", "JOHANSSON"],
+        ];
+
+        const mockUserResults3 = [
+          // Incorrect data
+          ["ADAM", "GRANT"],
+          ["ADELE", "DUNST"],
+          ["ALAN", "JONES"], // Mismatch
+          ["ALBERT", "JOHANSSON"],
+          ["ALEC", "BALDWIN"],
+        ];
+
+        runQueryBtn.addEventListener("click", async () => {
+          const userQuery = practiceSqlInput.value.trim();
+          if (!userQuery) {
+            yourResultsOutput.innerText = "Please enter your SQL query to run.";
+            correctResultsOutput.innerText = "";
+            comparisonStatusOutput.innerText = "";
+            return;
+          }
+
+          yourResultsOutput.innerText = "Running your query... (Simulated)";
+          correctResultsOutput.innerText = "";
+          comparisonStatusOutput.innerText = "";
+          runQueryBtn.disabled = true;
+          compareResultsBtn.disabled = true;
+          runQueryBtn.classList.add("opacity-50", "cursor-not-allowed");
+          compareResultsBtn.classList.add("opacity-50", "cursor-not-allowed");
+          runQuerySpinner.classList.remove("hidden");
+
+          // Simulate API call delay
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+
+          // Simulate fetching user's results
+          let simulatedUserResults = [];
+          // Simple logic to show different mock results based on query length/content
+          if (
+            userQuery.includes("ORDER BY last_name") &&
+            userQuery.includes("LIMIT 5")
+          ) {
+            simulatedUserResults = mockUserResults1; // Assume correct if specific keywords match
+          } else if (
+            userQuery.includes("FROM actor") &&
+            userQuery.includes("first_name")
+          ) {
+            simulatedUserResults = mockUserResults2; // Assume partial match / different order
+          } else {
+            simulatedUserResults = mockUserResults3; // Default to incorrect
+          }
+
+          yourResultsOutput.innerText = JSON.stringify(
+            simulatedUserResults,
+            null,
+            2
+          );
+          correctResultsOutput.innerText = JSON.stringify(
+            mockCorrectResults,
+            null,
+            2
+          );
+
+          runQueryBtn.disabled = false;
+          compareResultsBtn.disabled = false;
+          runQueryBtn.classList.remove("opacity-50", "cursor-not-allowed");
+          compareResultsBtn.classList.remove(
+            "opacity-50",
+            "cursor-not-allowed"
+          );
+          runQuerySpinner.classList.add("hidden");
+        });
+
+        compareResultsBtn.addEventListener("click", async () => {
+          const userResultsText = yourResultsOutput.innerText.trim();
+          const correctResultsText = correctResultsOutput.innerText.trim();
+
+          if (
+            !userResultsText ||
+            userResultsText.startsWith("Running") ||
+            userResultsText.startsWith("Results from")
+          ) {
+            comparisonStatusOutput.innerText =
+              "Please run your query first to get results for comparison.";
+            return;
+          }
+
+          comparisonStatusOutput.innerText = "Comparing results... (Simulated)";
+          compareResultsBtn.disabled = true;
+          runQueryBtn.disabled = true;
+          compareResultsBtn.classList.add("opacity-50", "cursor-not-allowed");
+          runQueryBtn.classList.add("opacity-50", "cursor-not-allowed");
+          compareResultsSpinner.classList.remove("hidden");
+
+          // Simulate API call delay for comparison
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          let comparisonResult = "";
+          try {
+            const userResults = JSON.parse(userResultsText);
+            const correctResults = JSON.parse(correctResultsText);
+
+            const areEqual = (arr1, arr2) => {
+              if (arr1.length !== arr2.length) return false;
+              for (let i = 0; i < arr1.length; i++) {
+                if (JSON.stringify(arr1[i]) !== JSON.stringify(arr2[i])) {
+                  return false;
+                }
+              }
+              return true;
+            };
+
+            if (areEqual(userResults, correctResults)) {
+              comparisonResult =
+                "✅ Results Match! Your query produced the same results as the correct answer.";
+            } else if (userResults.length === correctResults.length) {
+              comparisonResult =
+                "⚠️ Results Mismatch! The number of rows is the same, but the content or order is different.";
+            } else {
+              comparisonResult = `❌ Results Mismatch! Your query returned ${userResults.length} rows, while the correct answer returned ${correctResults.length} rows.`;
+            }
+          } catch (e) {
+            comparisonResult =
+              "Error parsing results. Ensure query output is valid JSON. (Simulated)";
+            console.error("Error during comparison:", e);
+          } finally {
+            comparisonStatusOutput.innerText = comparisonResult;
+            compareResultsBtn.disabled = false;
+            runQueryBtn.disabled = false;
+            compareResultsBtn.classList.remove(
+              "opacity-50",
+              "cursor-not-allowed"
+            );
+            runQueryBtn.classList.remove("opacity-50", "cursor-not-allowed");
+            compareResultsSpinner.classList.add("hidden");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
