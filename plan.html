@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interview Prep Mission HUD</title>
+<title>Interview Prep Missions</title>
 
 <style>
 :root {
@@ -17,6 +17,7 @@
   --system: #a78bfa;
   --js: #facc15;
   --ai: #22c55e;
+  --backend: #fb7185;
   --boss: #f43f5e;
 
   --radius: 18px;
@@ -38,16 +39,15 @@ body {
 }
 
 header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 16px;
 }
 
 h1 {
-  font-size: 20px;
+  font-size: 22px;
+  margin: 0;
 }
 
+/* CARDS */
 .card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -57,6 +57,7 @@ h1 {
   box-shadow: 0 25px 60px rgba(0,0,0,0.6);
 }
 
+/* PROGRESS */
 .progress {
   height: 10px;
   background: rgba(255,255,255,0.12);
@@ -71,6 +72,7 @@ h1 {
   transition: width 0.4s ease;
 }
 
+/* MISSIONS */
 .mission {
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -92,12 +94,15 @@ h1 {
   font-size: 10px;
   padding: 2px 8px;
   border-radius: 999px;
+  display: inline-block;
+  margin-top: 4px;
 }
 
 .frontend { background: rgba(56,189,248,0.2); }
 .system { background: rgba(167,139,250,0.2); }
 .js { background: rgba(250,204,21,0.2); }
 .ai { background: rgba(34,197,94,0.2); }
+.backend { background: rgba(251,113,133,0.2); }
 .boss { background: rgba(244,63,94,0.25); }
 
 .mission-body {
@@ -126,10 +131,12 @@ button {
   border-radius: 999px;
   padding: 6px 12px;
   color: var(--text);
+  cursor: pointer;
 }
 
 button:disabled {
   opacity: 0.4;
+  cursor: not-allowed;
 }
 </style>
 </head>
@@ -141,6 +148,7 @@ button:disabled {
   <h1>Interview Prep Missions</h1>
 </header>
 
+<!-- PROGRESS CARD -->
 <div class="card">
   <div style="display:flex;justify-content:space-between">
     <div>Level <strong id="level">1</strong></div>
@@ -156,57 +164,51 @@ button:disabled {
 </div>
 
 <script>
-const STORAGE = "mission-hud-v1";
+const STORAGE = "mission-dashboard-v2";
 
+/* FULL MISSION LIST */
 const missions = [
+  // FRONTEND CORE
+  { id:"rerender", title:"Stop Unnecessary Re-renders", objective:"Explain why React components re-render.", proof:"Explain 3 causes + 2 fixes verbally.", xp:15, category:"frontend" },
+  { id:"state", title:"Own State Placement", objective:"Decide where state should live.", proof:"Give 2 examples of colocation vs lifting.", xp:15, category:"frontend" },
+  { id:"memo", title:"Memoization Discipline", objective:"Use memoization correctly.", proof:"Explain when useMemo hurts performance.", xp:15, category:"frontend" },
+  { id:"forms", title:"Controlled vs Uncontrolled Inputs", objective:"Choose correct form strategy.", proof:"Explain trade-offs with examples.", xp:10, category:"frontend" },
+  { id:"errors", title:"Error Boundaries Mastery", objective:"Handle UI failures gracefully.", proof:"Explain fallback UI + recovery.", xp:10, category:"frontend" },
+
+  // JAVASCRIPT
+  { id:"eventloop", title:"Event Loop Clarity", objective:"Explain async execution.", proof:"Explain microtasks vs macrotasks.", xp:15, category:"js" },
+  { id:"closures", title:"Closure Confidence", objective:"Reason about closures.", proof:"Explain 2 real closure bugs.", xp:10, category:"js" },
+  { id:"async", title:"Async Error Handling", objective:"Handle async failures.", proof:"Explain try/catch + promise chains.", xp:10, category:"js" },
+
+  // SYSTEM DESIGN
+  { id:"dashboard", title:"Design a 1M Row Dashboard", objective:"Design scalable UI.", proof:"Explain virtualization + pagination.", xp:25, category:"system" },
+  { id:"caching", title:"Client Caching Strategy", objective:"Reduce unnecessary calls.", proof:"Explain cache invalidation.", xp:15, category:"system" },
+  { id:"permissions", title:"Role-Based UI", objective:"Design permissions safely.", proof:"Explain frontend vs backend enforcement.", xp:15, category:"system" },
+
+  // BACKEND AWARENESS
+  { id:"pagination", title:"API Pagination Patterns", objective:"Consume APIs efficiently.", proof:"Explain cursor vs offset.", xp:10, category:"backend" },
+  { id:"auth", title:"Auth Flow Awareness", objective:"Understand auth flows.", proof:"Explain JWT vs session.", xp:10, category:"backend" },
+
+  // AI
+  { id:"copilot", title:"AI-Assisted Development", objective:"Use AI responsibly.", proof:"Explain review strategy.", xp:15, category:"ai" },
+  { id:"ai-limits", title:"AI Failure Awareness", objective:"Know AI limits.", proof:"Give 2 examples AI failed.", xp:10, category:"ai" },
+
+  // INTERVIEW READINESS
+  { id:"case", title:"10-Min Case Study", objective:"Explain one project clearly.", proof:"Deliver without rambling.", xp:20, category:"system" },
+  { id:"behavioral", title:"Behavioral Clarity", objective:"Answer STAR questions.", proof:"Prepare 3 stories.", xp:15, category:"system" },
+
+  // BOSS
   {
-    id: "react-rerender",
-    title: "Stop Unnecessary Re-renders",
-    objective: "Explain when and why React components re-render.",
-    proof: "Verbally explain 3 causes and 2 fixes without notes.",
-    xp: 15,
-    category: "frontend"
-  },
-  {
-    id: "state-ownership",
-    title: "Own Your State",
-    objective: "Decide where state should live and justify it.",
-    proof: "Explain 2 examples of colocation vs lifting state.",
-    xp: 15,
-    category: "frontend"
-  },
-  {
-    id: "event-loop",
-    title: "Event Loop Clarity",
-    objective: "Explain async execution confidently.",
-    proof: "Explain microtasks vs macrotasks without diagrams.",
-    xp: 15,
-    category: "js"
-  },
-  {
-    id: "dashboard-design",
-    title: "Design a 1M Row Dashboard",
-    objective: "Design a scalable frontend architecture.",
-    proof: "Explain virtualization, pagination, and caching trade-offs.",
-    xp: 25,
-    category: "system"
-  },
-  {
-    id: "ai-story",
-    title: "AI Readiness",
-    objective: "Explain how you use AI responsibly.",
-    proof: "Explain where you trust AI and where you don’t.",
-    xp: 20,
-    category: "ai"
-  },
-  {
-    id: "boss-core",
-    title: "BOSS: Frontend Core Mastery",
-    objective: "Prove core frontend readiness.",
-    proof: "Explain all frontend missions end-to-end without gaps.",
-    xp: 50,
-    category: "boss",
-    requires: ["react-rerender", "state-ownership", "event-loop"]
+    id:"boss-core",
+    title:"BOSS: Frontend & System Readiness",
+    objective:"Prove interview readiness.",
+    proof:"Explain frontend + system topics end-to-end.",
+    xp:50,
+    category:"boss",
+    requires:[
+      "rerender","state","memo","eventloop",
+      "dashboard","permissions","case"
+    ]
   }
 ];
 
@@ -216,9 +218,9 @@ function save() {
   localStorage.setItem(STORAGE, JSON.stringify(state));
 }
 
-function canComplete(mission) {
-  if (!mission.requires) return true;
-  return mission.requires.every(id => state[id]);
+function canComplete(m) {
+  if (!m.requires) return true;
+  return m.requires.every(id => state[id]);
 }
 
 function render() {
@@ -246,8 +248,7 @@ function render() {
       </div>
     `;
 
-    const btn = div.querySelector("button");
-    btn.onclick = () => {
+    div.querySelector("button").onclick = () => {
       if (!canComplete(m)) {
         alert("Complete prerequisite missions first.");
         return;
