@@ -3,229 +3,133 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interview Prep HUD</title>
+<title>Interview Prep Mission HUD</title>
 
 <style>
-/* =========================
-   THEME TOKENS (BOLD)
-========================= */
 :root {
   --bg: #020617;
-  --card: rgba(15,23,42,0.85);
+  --card: rgba(15,23,42,0.9);
   --border: rgba(148,163,184,0.18);
   --text: #e5e7eb;
   --muted: #94a3b8;
 
-  --neon-blue: #38bdf8;
-  --neon-purple: #818cf8;
-  --neon-green: #22c55e;
-  --neon-yellow: #facc15;
+  --frontend: #38bdf8;
+  --system: #a78bfa;
+  --js: #facc15;
+  --ai: #22c55e;
+  --boss: #f43f5e;
 
   --radius: 18px;
-  --glass: blur(16px);
 }
 
-/* =========================
-   BASE
-========================= */
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
   font-family: ui-sans-serif, system-ui;
-  background:
-    radial-gradient(circle at top, #020617 0%, #000 70%);
+  background: radial-gradient(circle at top, #020617, #000);
   color: var(--text);
 }
 
 .container {
-  max-width: 460px;
+  max-width: 480px;
   margin: auto;
-  padding: 18px 14px 120px;
+  padding: 16px 14px 120px;
 }
 
-/* =========================
-   HEADER
-========================= */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
-header h1 {
-  font-size: 22px;
-  letter-spacing: 0.4px;
+h1 {
+  font-size: 20px;
 }
 
-.toggle {
-  border-radius: 999px;
-  padding: 6px 14px;
-  border: 1px solid var(--border);
-  background: var(--card);
-  backdrop-filter: var(--glass);
-  color: var(--text);
-}
-
-/* =========================
-   CARDS
-========================= */
 .card {
-  background: linear-gradient(
-    180deg,
-    rgba(15,23,42,0.95),
-    rgba(15,23,42,0.75)
-  );
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 18px;
-  margin-bottom: 18px;
-  backdrop-filter: var(--glass);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.02),
-    0 25px 60px rgba(0,0,0,0.6);
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.6);
 }
 
-/* =========================
-   LEVEL HUD
-========================= */
-.level-hud {
-  display: grid;
-  gap: 10px;
-}
-
-.level-top {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-}
-
-.level-ring {
-  height: 12px;
+.progress {
+  height: 10px;
   background: rgba(255,255,255,0.12);
   border-radius: 999px;
   overflow: hidden;
 }
 
-.level-fill {
+.progress-fill {
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    var(--neon-blue),
-    var(--neon-purple)
-  );
+  background: linear-gradient(90deg, #38bdf8, #818cf8);
   width: 0%;
-  transition: width 0.6s ease;
+  transition: width 0.4s ease;
 }
 
-/* =========================
-   TROPHIES GRID
-========================= */
-.trophy-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.trophy-card {
-  padding: 14px;
-  border-radius: 16px;
+.mission {
   border: 1px solid var(--border);
-  background: rgba(255,255,255,0.03);
-  position: relative;
-  overflow: hidden;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 14px;
+  background: rgba(255,255,255,0.04);
 }
 
-.trophy-card.locked {
-  opacity: 0.35;
+.mission.completed {
+  opacity: 0.5;
 }
 
-.trophy-card.unlocked {
-  box-shadow:
-    0 0 25px rgba(56,189,248,0.45),
-    inset 0 0 20px rgba(56,189,248,0.15);
-  animation: unlock 0.6s ease;
-}
-
-@keyframes unlock {
-  0% { transform: scale(0.9); opacity: 0.3; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-.trophy-icon {
-  font-size: 28px;
-}
-
-.trophy-title {
-  font-size: 13px;
-  margin-top: 6px;
-}
-
-.trophy-desc {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-/* =========================
-   TIMELINE
-========================= */
-.timeline {
-  position: relative;
-  padding-left: 24px;
-}
-
-.timeline::before {
-  content: "";
-  position: absolute;
-  left: 9px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: linear-gradient(
-    180deg,
-    transparent,
-    var(--border),
-    transparent
-  );
-}
-
-.task {
-  position: relative;
-  padding: 16px 0 16px 14px;
-}
-
-.dot {
-  position: absolute;
-  left: 1px;
-  top: 24px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-}
-
-.task.today .dot {
-  background: var(--neon-yellow);
-  box-shadow: 0 0 0 8px rgba(250,204,21,0.25);
-}
-
-.task.completed .dot {
-  background: var(--neon-green);
-}
-
-.task label {
+.mission-title {
+  font-weight: 600;
   font-size: 15px;
 }
 
-.task.completed label {
-  text-decoration: line-through;
-  color: var(--neon-green);
+.badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
 }
 
-.meta {
-  font-size: 11px;
+.frontend { background: rgba(56,189,248,0.2); }
+.system { background: rgba(167,139,250,0.2); }
+.js { background: rgba(250,204,21,0.2); }
+.ai { background: rgba(34,197,94,0.2); }
+.boss { background: rgba(244,63,94,0.25); }
+
+.mission-body {
+  font-size: 13px;
+  margin-top: 8px;
+  color: #cbd5f5;
+}
+
+.proof {
+  font-size: 12px;
+  margin-top: 6px;
   color: var(--muted);
+  font-style: italic;
+}
+
+.actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+button {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  color: var(--text);
+}
+
+button:disabled {
+  opacity: 0.4;
 }
 </style>
 </head>
@@ -234,105 +138,131 @@ header h1 {
 <div class="container">
 
 <header>
-  <h1>Interview Prep HUD</h1>
-  <button class="toggle">Theme</button>
+  <h1>Interview Prep Missions</h1>
 </header>
 
-<!-- LEVEL -->
-<div class="card level-hud">
-  <div class="level-top">
-    <div>LEVEL <strong id="level">1</strong></div>
+<div class="card">
+  <div style="display:flex;justify-content:space-between">
+    <div>Level <strong id="level">1</strong></div>
     <div><strong id="xp">0</strong> XP</div>
   </div>
-  <div class="level-ring">
-    <div class="level-fill" id="xpFill"></div>
+  <div class="progress" style="margin-top:8px">
+    <div class="progress-fill" id="xpFill"></div>
   </div>
 </div>
 
-<!-- TROPHIES -->
-<div class="card">
-  <h3 style="margin:0 0 12px">Achievements</h3>
-  <div class="trophy-grid" id="trophies"></div>
-</div>
-
-<!-- TASKS -->
-<div class="card timeline" id="tasks"></div>
+<div id="missions"></div>
 
 </div>
 
 <script>
-const STORAGE = "hud-v1";
-const start = new Date("2026-01-15");
+const STORAGE = "mission-hud-v1";
 
-const tasks = [
-  "React re-render mastery",
-  "JS event loop clarity",
-  "Type-safe configs",
-  "System design dashboard",
-  "Performance trade-offs",
-  "AI usage story",
-  "Mock interviews",
-  "Applications sent",
-  "Offer negotiation"
-];
-
-const trophies = [
-  { icon:"🏁", title:"First Blood", desc:"Complete your first task", at:1 },
-  { icon:"🔥", title:"Momentum", desc:"3 tasks completed", at:3 },
-  { icon:"🚀", title:"Velocity", desc:"5 tasks completed", at:5 },
-  { icon:"🧠", title:"Architect", desc:"System design done", at:4 },
-  { icon:"🏆", title:"Interview Ready", desc:"All tasks done", at:tasks.length }
+const missions = [
+  {
+    id: "react-rerender",
+    title: "Stop Unnecessary Re-renders",
+    objective: "Explain when and why React components re-render.",
+    proof: "Verbally explain 3 causes and 2 fixes without notes.",
+    xp: 15,
+    category: "frontend"
+  },
+  {
+    id: "state-ownership",
+    title: "Own Your State",
+    objective: "Decide where state should live and justify it.",
+    proof: "Explain 2 examples of colocation vs lifting state.",
+    xp: 15,
+    category: "frontend"
+  },
+  {
+    id: "event-loop",
+    title: "Event Loop Clarity",
+    objective: "Explain async execution confidently.",
+    proof: "Explain microtasks vs macrotasks without diagrams.",
+    xp: 15,
+    category: "js"
+  },
+  {
+    id: "dashboard-design",
+    title: "Design a 1M Row Dashboard",
+    objective: "Design a scalable frontend architecture.",
+    proof: "Explain virtualization, pagination, and caching trade-offs.",
+    xp: 25,
+    category: "system"
+  },
+  {
+    id: "ai-story",
+    title: "AI Readiness",
+    objective: "Explain how you use AI responsibly.",
+    proof: "Explain where you trust AI and where you don’t.",
+    xp: 20,
+    category: "ai"
+  },
+  {
+    id: "boss-core",
+    title: "BOSS: Frontend Core Mastery",
+    objective: "Prove core frontend readiness.",
+    proof: "Explain all frontend missions end-to-end without gaps.",
+    xp: 50,
+    category: "boss",
+    requires: ["react-rerender", "state-ownership", "event-loop"]
+  }
 ];
 
 const state = JSON.parse(localStorage.getItem(STORAGE)) || {};
 
-function save(){ localStorage.setItem(STORAGE, JSON.stringify(state)); }
+function save() {
+  localStorage.setItem(STORAGE, JSON.stringify(state));
+}
 
-function render(){
-  const taskEl = document.getElementById("tasks");
-  taskEl.innerHTML = "";
-  let done = 0;
+function canComplete(mission) {
+  if (!mission.requires) return true;
+  return mission.requires.every(id => state[id]);
+}
 
-  tasks.forEach((t,i)=>{
-    const id="t"+i;
-    if(state[id]) done++;
+function render() {
+  const el = document.getElementById("missions");
+  el.innerHTML = "";
 
-    const d=new Date(start); d.setDate(d.getDate()+i);
-    const isToday = Math.floor((new Date()-d)/86400000)===0;
+  let totalXP = 0;
 
-    const el=document.createElement("div");
-    el.className=`task ${state[id]?"completed":""} ${isToday?"today":""}`;
-    el.innerHTML=`
-      <div class="dot"></div>
-      <input type="checkbox" ${state[id]?"checked":""}/>
-      <label>${t}</label>
-      <div class="meta">${d.toDateString()}</div>
+  missions.forEach(m => {
+    if (state[m.id]) totalXP += m.xp;
+
+    const div = document.createElement("div");
+    div.className = "mission" + (state[m.id] ? " completed" : "");
+
+    div.innerHTML = `
+      <div class="mission-title">${m.title}</div>
+      <span class="badge ${m.category}">${m.category.toUpperCase()}</span>
+      <div class="mission-body">${m.objective}</div>
+      <div class="proof">Proof: ${m.proof}</div>
+      <div class="actions">
+        <span>+${m.xp} XP</span>
+        <button ${state[m.id] ? "disabled" : ""}>
+          ${state[m.id] ? "Completed" : "Mark Complete"}
+        </button>
+      </div>
     `;
-    el.querySelector("input").onchange=e=>{
-      state[id]=e.target.checked;
-      save(); render();
+
+    const btn = div.querySelector("button");
+    btn.onclick = () => {
+      if (!canComplete(m)) {
+        alert("Complete prerequisite missions first.");
+        return;
+      }
+      state[m.id] = true;
+      save();
+      render();
     };
-    taskEl.appendChild(el);
+
+    el.appendChild(div);
   });
 
-  const xp = done*10;
-  document.getElementById("xp").textContent=xp;
-  document.getElementById("level").textContent=Math.floor(xp/50)+1;
-  document.getElementById("xpFill").style.width=(xp%50)*2+"%";
-
-  const tro=document.getElementById("trophies");
-  tro.innerHTML="";
-  trophies.forEach(tr=>{
-    const unlocked = done>=tr.at;
-    const c=document.createElement("div");
-    c.className=`trophy-card ${unlocked?"unlocked":"locked"}`;
-    c.innerHTML=`
-      <div class="trophy-icon">${tr.icon}</div>
-      <div class="trophy-title">${tr.title}</div>
-      <div class="trophy-desc">${tr.desc}</div>
-    `;
-    tro.appendChild(c);
-  });
+  document.getElementById("xp").textContent = totalXP;
+  document.getElementById("level").textContent = Math.floor(totalXP / 50) + 1;
+  document.getElementById("xpFill").style.width = (totalXP % 50) * 2 + "%";
 }
 
 render();
