@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interview Prep Missions</title>
+<title>Interview Prep – Mission Dashboard</title>
 
 <style>
 :root {
@@ -18,6 +18,8 @@
   --js: #facc15;
   --ai: #22c55e;
   --backend: #fb7185;
+  --testing: #60a5fa;
+  --perf: #34d399;
   --boss: #f43f5e;
 
   --radius: 18px;
@@ -33,21 +35,16 @@ body {
 }
 
 .container {
-  max-width: 480px;
+  max-width: 520px;
   margin: auto;
   padding: 16px 14px 120px;
 }
 
-header {
-  margin-bottom: 16px;
-}
-
 h1 {
   font-size: 22px;
-  margin: 0;
+  margin: 0 0 16px;
 }
 
-/* CARDS */
 .card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -57,7 +54,6 @@ h1 {
   box-shadow: 0 25px 60px rgba(0,0,0,0.6);
 }
 
-/* PROGRESS */
 .progress {
   height: 10px;
   background: rgba(255,255,255,0.12);
@@ -98,12 +94,14 @@ h1 {
   margin-top: 4px;
 }
 
-.frontend { background: rgba(56,189,248,0.2); }
-.system { background: rgba(167,139,250,0.2); }
-.js { background: rgba(250,204,21,0.2); }
-.ai { background: rgba(34,197,94,0.2); }
-.backend { background: rgba(251,113,133,0.2); }
-.boss { background: rgba(244,63,94,0.25); }
+.frontend { background: rgba(56,189,248,0.25); }
+.system { background: rgba(167,139,250,0.25); }
+.js { background: rgba(250,204,21,0.25); }
+.ai { background: rgba(34,197,94,0.25); }
+.backend { background: rgba(251,113,133,0.25); }
+.testing { background: rgba(96,165,250,0.25); }
+.perf { background: rgba(52,211,153,0.25); }
+.boss { background: rgba(244,63,94,0.35); }
 
 .mission-body {
   font-size: 13px;
@@ -144,11 +142,8 @@ button:disabled {
 <body>
 <div class="container">
 
-<header>
-  <h1>Interview Prep Missions</h1>
-</header>
+<h1>Interview Prep Missions</h1>
 
-<!-- PROGRESS CARD -->
 <div class="card">
   <div style="display:flex;justify-content:space-between">
     <div>Level <strong id="level">1</strong></div>
@@ -164,73 +159,96 @@ button:disabled {
 </div>
 
 <script>
-const STORAGE = "mission-dashboard-v2";
+const STORAGE = "full-mission-dashboard-v1";
 
-/* FULL MISSION LIST */
+/* ===== FULL MISSION SET (~40+) ===== */
 const missions = [
-  // FRONTEND CORE
-  { id:"rerender", title:"Stop Unnecessary Re-renders", objective:"Explain why React components re-render.", proof:"Explain 3 causes + 2 fixes verbally.", xp:15, category:"frontend" },
-  { id:"state", title:"Own State Placement", objective:"Decide where state should live.", proof:"Give 2 examples of colocation vs lifting.", xp:15, category:"frontend" },
-  { id:"memo", title:"Memoization Discipline", objective:"Use memoization correctly.", proof:"Explain when useMemo hurts performance.", xp:15, category:"frontend" },
-  { id:"forms", title:"Controlled vs Uncontrolled Inputs", objective:"Choose correct form strategy.", proof:"Explain trade-offs with examples.", xp:10, category:"frontend" },
-  { id:"errors", title:"Error Boundaries Mastery", objective:"Handle UI failures gracefully.", proof:"Explain fallback UI + recovery.", xp:10, category:"frontend" },
+  // FRONTEND CORE (10)
+  {id:"rerender",title:"Stop Unnecessary Re-renders",objective:"Explain why React components re-render.",proof:"3 causes + 2 fixes verbally.",xp:15,category:"frontend"},
+  {id:"state",title:"State Ownership",objective:"Place state correctly.",proof:"2 real examples explained.",xp:15,category:"frontend"},
+  {id:"memo",title:"Memoization Discipline",objective:"Avoid misuse of memo.",proof:"Explain when memo hurts.",xp:15,category:"frontend"},
+  {id:"forms",title:"Form Strategy",objective:"Choose controlled vs uncontrolled.",proof:"Explain trade-offs.",xp:10,category:"frontend"},
+  {id:"refs",title:"Refs & Imperative APIs",objective:"Use refs safely.",proof:"Explain 2 valid use cases.",xp:10,category:"frontend"},
+  {id:"suspense",title:"Suspense Clarity",objective:"Understand Suspense limits.",proof:"Explain what it solves.",xp:10,category:"frontend"},
+  {id:"errors",title:"Error Boundaries",objective:"Design failure UX.",proof:"Explain fallback + recovery.",xp:10,category:"frontend"},
+  {id:"accessibility",title:"Accessibility Basics",objective:"Avoid a11y regressions.",proof:"Explain keyboard + aria basics.",xp:10,category:"frontend"},
+  {id:"design-system",title:"Component API Design",objective:"Design reusable components.",proof:"Explain prop API trade-offs.",xp:15,category:"frontend"},
+  {id:"ui-arch",title:"Frontend Architecture",objective:"Structure large UI codebases.",proof:"Explain feature-based structure.",xp:15,category:"frontend"},
 
-  // JAVASCRIPT
-  { id:"eventloop", title:"Event Loop Clarity", objective:"Explain async execution.", proof:"Explain microtasks vs macrotasks.", xp:15, category:"js" },
-  { id:"closures", title:"Closure Confidence", objective:"Reason about closures.", proof:"Explain 2 real closure bugs.", xp:10, category:"js" },
-  { id:"async", title:"Async Error Handling", objective:"Handle async failures.", proof:"Explain try/catch + promise chains.", xp:10, category:"js" },
+  // JAVASCRIPT & TS (8)
+  {id:"eventloop",title:"Event Loop Mastery",objective:"Explain async execution.",proof:"Micro vs macro tasks.",xp:15,category:"js"},
+  {id:"closures",title:"Closures Confidence",objective:"Reason about closures.",proof:"Explain 2 real bugs.",xp:10,category:"js"},
+  {id:"this",title:"this Binding Rules",objective:"Understand JS this.",proof:"Explain all 4 rules.",xp:10,category:"js"},
+  {id:"immutability",title:"Immutability Patterns",objective:"Avoid mutation bugs.",proof:"Explain structural sharing.",xp:10,category:"js"},
+  {id:"async-errors",title:"Async Error Handling",objective:"Handle async failures.",proof:"Explain try/catch & promises.",xp:10,category:"js"},
+  {id:"ts-generics",title:"TypeScript Generics",objective:"Use generics effectively.",proof:"Explain 2 real cases.",xp:15,category:"js"},
+  {id:"ts-unions",title:"Discriminated Unions",objective:"Model complex state.",proof:"Explain union narrowing.",xp:10,category:"js"},
+  {id:"ts-perf",title:"TS Performance Awareness",objective:"Avoid slow builds.",proof:"Explain common causes.",xp:10,category:"js"},
 
-  // SYSTEM DESIGN
-  { id:"dashboard", title:"Design a 1M Row Dashboard", objective:"Design scalable UI.", proof:"Explain virtualization + pagination.", xp:25, category:"system" },
-  { id:"caching", title:"Client Caching Strategy", objective:"Reduce unnecessary calls.", proof:"Explain cache invalidation.", xp:15, category:"system" },
-  { id:"permissions", title:"Role-Based UI", objective:"Design permissions safely.", proof:"Explain frontend vs backend enforcement.", xp:15, category:"system" },
+  // PERFORMANCE (5)
+  {id:"cwv",title:"Core Web Vitals",objective:"Understand CWV.",proof:"Explain LCP, CLS, INP.",xp:15,category:"perf"},
+  {id:"bundles",title:"Bundle Optimization",objective:"Reduce JS payload.",proof:"Explain code splitting.",xp:15,category:"perf"},
+  {id:"images",title:"Image Strategy",objective:"Optimize images.",proof:"Explain formats & loading.",xp:10,category:"perf"},
+  {id:"fonts",title:"Font Loading",objective:"Avoid font jank.",proof:"Explain preload vs swap.",xp:10,category:"perf"},
+  {id:"rerender-debug",title:"Render Debugging",objective:"Diagnose performance issues.",proof:"Explain profiling approach.",xp:15,category:"perf"},
 
-  // BACKEND AWARENESS
-  { id:"pagination", title:"API Pagination Patterns", objective:"Consume APIs efficiently.", proof:"Explain cursor vs offset.", xp:10, category:"backend" },
-  { id:"auth", title:"Auth Flow Awareness", objective:"Understand auth flows.", proof:"Explain JWT vs session.", xp:10, category:"backend" },
+  // SYSTEM DESIGN (6)
+  {id:"dashboard",title:"1M Row Dashboard",objective:"Design scalable UI.",proof:"Virtualization vs pagination.",xp:25,category:"system"},
+  {id:"caching",title:"Client Caching",objective:"Reduce API calls.",proof:"Explain invalidation.",xp:15,category:"system"},
+  {id:"permissions",title:"Role-Based UI",objective:"Design permission UX.",proof:"Frontend vs backend roles.",xp:15,category:"system"},
+  {id:"config-ui",title:"Config-Driven UI",objective:"Build extensible UI.",proof:"Explain schema design.",xp:15,category:"system"},
+  {id:"i18n",title:"Internationalization",objective:"Support multiple locales.",proof:"Explain i18n pitfalls.",xp:10,category:"system"},
+  {id:"realtime",title:"Realtime Updates",objective:"Handle live data.",proof:"Explain polling vs websockets.",xp:10,category:"system"},
 
-  // AI
-  { id:"copilot", title:"AI-Assisted Development", objective:"Use AI responsibly.", proof:"Explain review strategy.", xp:15, category:"ai" },
-  { id:"ai-limits", title:"AI Failure Awareness", objective:"Know AI limits.", proof:"Give 2 examples AI failed.", xp:10, category:"ai" },
+  // BACKEND AWARENESS (4)
+  {id:"api-design",title:"API Consumption",objective:"Consume APIs safely.",proof:"Explain error contracts.",xp:10,category:"backend"},
+  {id:"pagination",title:"Pagination Patterns",objective:"Handle large datasets.",proof:"Cursor vs offset.",xp:10,category:"backend"},
+  {id:"auth",title:"Auth Flows",objective:"Understand auth.",proof:"JWT vs OAuth.",xp:10,category:"backend"},
+  {id:"rate-limit",title:"Rate Limiting",objective:"Handle limits gracefully.",proof:"Explain retry/backoff.",xp:10,category:"backend"},
 
-  // INTERVIEW READINESS
-  { id:"case", title:"10-Min Case Study", objective:"Explain one project clearly.", proof:"Deliver without rambling.", xp:20, category:"system" },
-  { id:"behavioral", title:"Behavioral Clarity", objective:"Answer STAR questions.", proof:"Prepare 3 stories.", xp:15, category:"system" },
+  // AI (4)
+  {id:"copilot",title:"Copilot Usage",objective:"Use AI effectively.",proof:"Explain daily workflow.",xp:15,category:"ai"},
+  {id:"ai-review",title:"AI Code Review",objective:"Review AI output.",proof:"Explain validation steps.",xp:15,category:"ai"},
+  {id:"ai-limits",title:"AI Failure Modes",objective:"Know AI limits.",proof:"Give 2 failure examples.",xp:10,category:"ai"},
+  {id:"ai-product",title:"AI in Product",objective:"Integrate AI safely.",proof:"Explain cost & guardrails.",xp:15,category:"ai"},
 
-  // BOSS
+  // TESTING (4)
+  {id:"unit-tests",title:"Unit Testing Strategy",objective:"Test logic properly.",proof:"Explain what not to test.",xp:10,category:"testing"},
+  {id:"rtl",title:"Component Testing",objective:"Test UI behavior.",proof:"Explain RTL philosophy.",xp:10,category:"testing"},
+  {id:"e2e",title:"E2E Testing",objective:"Test flows.",proof:"Explain Playwright usage.",xp:10,category:"testing"},
+  {id:"flaky",title:"Flaky Test Handling",objective:"Stabilize tests.",proof:"Explain mitigation.",xp:10,category:"testing"},
+
+  // FINAL BOSS
   {
-    id:"boss-core",
-    title:"BOSS: Frontend & System Readiness",
-    objective:"Prove interview readiness.",
-    proof:"Explain frontend + system topics end-to-end.",
-    xp:50,
+    id:"boss-final",
+    title:"FINAL BOSS: Interview Ready",
+    objective:"Demonstrate full readiness.",
+    proof:"Confidently answer frontend, system, JS, AI questions.",
+    xp:100,
     category:"boss",
     requires:[
-      "rerender","state","memo","eventloop",
-      "dashboard","permissions","case"
+      "rerender","state","memo","eventloop","dashboard",
+      "permissions","case","copilot","unit-tests"
     ]
   }
 ];
 
 const state = JSON.parse(localStorage.getItem(STORAGE)) || {};
 
-function save() {
-  localStorage.setItem(STORAGE, JSON.stringify(state));
-}
+function save(){ localStorage.setItem(STORAGE, JSON.stringify(state)); }
 
-function canComplete(m) {
-  if (!m.requires) return true;
+function canComplete(m){
+  if(!m.requires) return true;
   return m.requires.every(id => state[id]);
 }
 
-function render() {
+function render(){
   const el = document.getElementById("missions");
   el.innerHTML = "";
-
   let totalXP = 0;
 
-  missions.forEach(m => {
-    if (state[m.id]) totalXP += m.xp;
+  missions.forEach(m=>{
+    if(state[m.id]) totalXP += m.xp;
 
     const div = document.createElement("div");
     div.className = "mission" + (state[m.id] ? " completed" : "");
@@ -248,8 +266,8 @@ function render() {
       </div>
     `;
 
-    div.querySelector("button").onclick = () => {
-      if (!canComplete(m)) {
+    div.querySelector("button").onclick = ()=>{
+      if(!canComplete(m)){
         alert("Complete prerequisite missions first.");
         return;
       }
@@ -262,8 +280,8 @@ function render() {
   });
 
   document.getElementById("xp").textContent = totalXP;
-  document.getElementById("level").textContent = Math.floor(totalXP / 50) + 1;
-  document.getElementById("xpFill").style.width = (totalXP % 50) * 2 + "%";
+  document.getElementById("level").textContent = Math.floor(totalXP / 100) + 1;
+  document.getElementById("xpFill").style.width = (totalXP % 100) + "%";
 }
 
 render();
