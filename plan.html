@@ -1,308 +1,336 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Interview Prep Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Interview Prep Dashboard</title>
 
-  <style>
-    :root {
-      --bg: #0b0b0c;
-      --card: #111113;
-      --border: #1f1f23;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --accent: #3b82f6;
-      --success: #22c55e;
-      --warning: #facc15;
-    }
+<style>
+/* =========================
+   SHADCN DESIGN TOKENS
+========================= */
+:root {
+  --background: #0b0b0c;
+  --foreground: #e5e7eb;
+  --card: #111113;
+  --border: #1f1f23;
+  --muted: #9ca3af;
+  --primary: #3b82f6;
+  --success: #22c55e;
+  --warning: #facc15;
+  --radius: 14px;
+}
 
-    [data-theme="light"] {
-      --bg: #f9fafb;
-      --card: #ffffff;
-      --border: #e5e7eb;
-      --text: #111827;
-      --muted: #6b7280;
-      --accent: #2563eb;
-    }
+[data-theme="light"] {
+  --background: #f9fafb;
+  --foreground: #111827;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --muted: #6b7280;
+  --primary: #2563eb;
+}
 
-    * { box-sizing: border-box; }
+/* =========================
+   BASE
+========================= */
+* { box-sizing: border-box; }
 
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: ui-sans-serif, system-ui;
-    }
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui;
+  background: var(--background);
+  color: var(--foreground);
+}
 
-    .container {
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 16px 14px 80px;
-    }
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px 14px 96px;
+}
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
+/* =========================
+   SHADCN-LIKE COMPONENTS
+========================= */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 14px;
+}
 
-    h1 {
-      font-size: 20px;
-      margin: 0;
-    }
+.button {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--foreground);
+  border-radius: 10px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
 
-    button {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--text);
-      border-radius: 10px;
-      padding: 6px 10px;
-      cursor: pointer;
-    }
+.badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
 
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 14px;
-    }
+.progress {
+  height: 8px;
+  background: #ffffff22;
+  border-radius: 999px;
+  overflow: hidden;
+}
 
-    .muted {
-      color: var(--muted);
-      font-size: 13px;
-    }
+.progress-fill {
+  height: 100%;
+  background: var(--primary);
+  width: 0%;
+  transition: width 0.3s ease;
+}
 
-    .xp {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
+.muted {
+  color: var(--muted);
+  font-size: 12px;
+}
 
-    .progress {
-      height: 8px;
-      background: #e5e7eb33;
-      border-radius: 999px;
-      overflow: hidden;
-    }
+/* =========================
+   HEADER
+========================= */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
 
-    .progress-fill {
-      height: 100%;
-      background: var(--accent);
-      width: 0%;
-      transition: width 0.3s ease;
-    }
+/* =========================
+   TIMELINE
+========================= */
+.timeline {
+  position: relative;
+  padding-left: 18px;
+}
 
-    .timeline {
-      position: relative;
-      padding-left: 20px;
-    }
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
 
-    .timeline::before {
-      content: "";
-      position: absolute;
-      left: 6px;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: var(--border);
-    }
+.task {
+  position: relative;
+  padding: 12px 0 12px 12px;
+}
 
-    .task {
-      position: relative;
-      padding: 12px 0 12px 12px;
-    }
+.dot {
+  position: absolute;
+  left: -1px;
+  top: 18px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--border);
+}
 
-    .dot {
-      position: absolute;
-      left: -2px;
-      top: 18px;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--border);
-    }
+.task.completed .dot { background: var(--success); }
+.task.today .dot { background: var(--warning); }
 
-    .task.completed .dot {
-      background: var(--success);
-    }
+.task label {
+  cursor: pointer;
+}
 
-    .task.today .dot {
-      background: var(--warning);
-    }
+.task.completed label {
+  text-decoration: line-through;
+  color: var(--success);
+}
 
-    .task-header {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-    }
+/* =========================
+   TROPHIES
+========================= */
+.trophy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 8px 0;
+}
 
-    .task input {
-      margin-top: 4px;
-      accent-color: var(--accent);
-    }
-
-    .task.completed label {
-      text-decoration: line-through;
-      color: var(--success);
-    }
-
-    .badge {
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      margin-left: 6px;
-    }
-
-    .past { background: #e5e7eb33; }
-    .today { background: var(--warning); color: #000; }
-    .future { background: #94a3b833; }
-  </style>
+.trophy.locked {
+  opacity: 0.4;
+}
+</style>
 </head>
+
 <body>
-
 <div class="container">
-  <header>
-    <h1>Interview Prep</h1>
-    <button id="themeToggle">Toggle Theme</button>
-  </header>
 
-  <div class="card">
-    <div class="xp">
-      <div>Level <strong id="level">1</strong></div>
-      <div><strong id="xp">0</strong> XP</div>
-    </div>
-    <div class="progress">
-      <div class="progress-fill" id="xpBar"></div>
-    </div>
-    <div class="muted" style="margin-top:6px">
-      10 XP per task · Level up every 100 XP
-    </div>
+<header>
+  <h2>Interview Prep</h2>
+  <button class="button" id="themeToggle">Theme</button>
+</header>
+
+<!-- XP / LEVEL -->
+<div class="card">
+  <div style="display:flex;justify-content:space-between">
+    <div>Level <strong id="level">1</strong></div>
+    <div><strong id="xp">0</strong> XP</div>
   </div>
+  <div class="progress" style="margin-top:8px">
+    <div class="progress-fill" id="xpBar"></div>
+  </div>
+  <div class="muted" style="margin-top:6px">
+    10 XP per task · Trophies unlock automatically
+  </div>
+</div>
 
-  <div class="card timeline" id="tasks"></div>
+<!-- TROPHIES -->
+<div class="card">
+  <strong>Trophies</strong>
+  <div id="trophies"></div>
+</div>
+
+<!-- TASKS -->
+<div class="card timeline" id="tasks"></div>
+
 </div>
 
 <script>
-  const STORAGE = "frontend-dashboard-v3";
-  const THEME_KEY = "frontend-theme";
-  const startDate = new Date("2026-01-15");
-  const XP_PER_TASK = 10;
+/* =========================
+   DATA
+========================= */
+const STORAGE = "prep-dashboard-v4";
+const THEME = "prep-theme";
+const startDate = new Date("2026-01-15");
 
-  const tasksData = [
-    "React re-render reasoning",
-    "Memoization trade-offs",
-    "Controlled vs uncontrolled",
-    "Error boundaries",
-    "JS event loop",
-    "Closures",
-    "Type-safe configs",
-    "Resume first draft",
-    "Large data dashboards",
-    "Caching strategies",
-    "Permissions UI",
-    "Config-driven UI",
-    "Performance trade-offs",
-    "API pagination",
-    "Auth flows",
-    "Select case study",
-    "Architecture explanation",
-    "Trade-offs explanation",
-    "Performance story",
-    "AI usage story",
-    "Finalize resume",
-    "System design mock 1",
-    "System design mock 2",
-    "React/JS mock",
-    "Behavioral mock",
-    "Applications",
-    "Referrals",
-    "Company prep",
-    "Offer evaluation",
-    "Negotiation",
-    "Final decision"
-  ];
+const tasks = [
+  "React re-render reasoning",
+  "Memoization trade-offs",
+  "Controlled vs uncontrolled",
+  "Error boundaries",
+  "JS event loop",
+  "Closures",
+  "Type-safe configs",
+  "Resume first draft",
+  "Large data dashboards",
+  "Caching strategies",
+  "Permissions UI",
+  "Config-driven UI",
+  "Performance trade-offs",
+  "API pagination",
+  "Auth flows",
+  "AI usage story",
+  "System design mock",
+  "Behavioral mock",
+  "Applications",
+  "Offer negotiation"
+];
 
-  const state = JSON.parse(localStorage.getItem(STORAGE)) || {};
-  const today = new Date();
+const trophiesDef = [
+  { id: "first", label: "🏁 First Task Completed", check: c => c >= 1 },
+  { id: "five", label: "🔥 5 Tasks Done", check: c => c >= 5 },
+  { id: "ten", label: "🚀 10 Tasks Done", check: c => c >= 10 },
+  { id: "ai", label: "🤖 AI Ready", check: (_, s) => s["t15"] },
+  { id: "ready", label: "🏆 Interview Ready", check: c => c === tasks.length }
+];
 
-  function taskDate(i) {
-    const d = new Date(startDate);
-    d.setDate(d.getDate() + i);
-    return d;
-  }
+/* =========================
+   STATE
+========================= */
+const state = JSON.parse(localStorage.getItem(STORAGE)) || {};
 
-  function status(date) {
-    const diff = Math.floor((today - date) / 86400000);
-    if (diff > 0) return ["Past", "past"];
-    if (diff === 0) return ["Today", "today"];
-    return ["Future", "future"];
-  }
+function save() {
+  localStorage.setItem(STORAGE, JSON.stringify(state));
+}
 
-  function render() {
-    const el = document.getElementById("tasks");
-    el.innerHTML = "";
+/* =========================
+   HELPERS
+========================= */
+function taskDate(i) {
+  const d = new Date(startDate);
+  d.setDate(d.getDate() + i);
+  return d;
+}
 
-    let completed = 0;
+function status(d) {
+  const diff = Math.floor((new Date() - d) / 86400000);
+  if (diff === 0) return "today";
+  if (diff > 0) return "past";
+  return "future";
+}
 
-    tasksData.forEach((text, i) => {
-      const id = `t${i}`;
-      const checked = !!state[id];
-      if (checked) completed++;
+/* =========================
+   RENDER
+========================= */
+function render() {
+  const taskEl = document.getElementById("tasks");
+  taskEl.innerHTML = "";
 
-      const date = taskDate(i);
-      const [label, cls] = status(date);
+  let completed = 0;
 
-      const task = document.createElement("div");
-      task.className = `task ${checked ? "completed" : ""} ${cls === "today" ? "today" : ""}`;
+  tasks.forEach((text, i) => {
+    const id = "t" + i;
+    const checked = !!state[id];
+    if (checked) completed++;
 
-      task.innerHTML = `
-        <div class="dot"></div>
-        <div class="task-header">
-          <input type="checkbox" ${checked ? "checked" : ""} />
-          <div>
-            <label>${text}</label>
-            <div class="muted">
-              ${date.toDateString()}
-              <span class="badge ${cls}">${label}</span>
-            </div>
-          </div>
-        </div>
-      `;
+    const d = taskDate(i);
+    const s = status(d);
 
-      task.querySelector("input").addEventListener("change", e => {
-        state[id] = e.target.checked;
-        localStorage.setItem(STORAGE, JSON.stringify(state));
-        render();
-      });
+    const el = document.createElement("div");
+    el.className = `task ${checked ? "completed" : ""} ${s === "today" ? "today" : ""}`;
 
-      el.appendChild(task);
-    });
+    el.innerHTML = `
+      <div class="dot"></div>
+      <input type="checkbox" ${checked ? "checked" : ""} />
+      <label>${text}</label>
+      <div class="muted">${d.toDateString()}</div>
+    `;
 
-    const xp = completed * XP_PER_TASK;
-    const level = Math.floor(xp / 100) + 1;
-    const progress = (xp % 100);
+    el.querySelector("input").onchange = e => {
+      state[id] = e.target.checked;
+      save();
+      render();
+    };
 
-    document.getElementById("xp").textContent = xp;
-    document.getElementById("level").textContent = level;
-    document.getElementById("xpBar").style.width = progress + "%";
-  }
+    taskEl.appendChild(el);
+  });
 
-  // Theme
-  const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
-  document.documentElement.dataset.theme = savedTheme;
+  // XP
+  const xp = completed * 10;
+  const level = Math.floor(xp / 100) + 1;
+  document.getElementById("xp").textContent = xp;
+  document.getElementById("level").textContent = level;
+  document.getElementById("xpBar").style.width = (xp % 100) + "%";
 
-  document.getElementById("themeToggle").onclick = () => {
-    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    localStorage.setItem(THEME_KEY, next);
-  };
+  // Trophies
+  const trophyEl = document.getElementById("trophies");
+  trophyEl.innerHTML = "";
+  trophiesDef.forEach(t => {
+    const unlocked = t.check(completed, state);
+    const div = document.createElement("div");
+    div.className = "trophy" + (unlocked ? "" : " locked");
+    div.textContent = t.label;
+    trophyEl.appendChild(div);
+  });
+}
 
-  render();
+/* =========================
+   THEME
+========================= */
+document.documentElement.dataset.theme =
+  localStorage.getItem(THEME) || "dark";
+
+document.getElementById("themeToggle").onclick = () => {
+  const next =
+    document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  localStorage.setItem(THEME, next);
+};
+
+render();
 </script>
-
 </body>
 </html>
