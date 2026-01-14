@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Senior Frontend Interview Checklist</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --bg: #0b0b0c;
+      --card: #111113;
+      --border: #1f1f23;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #3b82f6;
+      --success: #22c55e;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 32px 16px 64px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .week {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .week-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 18px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .week-header:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .week-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .week-meta {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .week-content {
+      padding: 0 18px 18px;
+      display: none;
+    }
+
+    .week.open .week-content {
+      display: block;
+    }
+
+    .checklist {
+      margin-top: 12px;
+    }
+
+    .item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .item:last-child {
+      border-bottom: none;
+    }
+
+    .item input {
+      margin-top: 4px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .item label {
+      cursor: pointer;
+    }
+
+    .item.completed label {
+      color: var(--success);
+      text-decoration: line-through;
+    }
+
+    .footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Senior Frontend Interview Checklist</h1>
+  <div class="subtitle">
+    6–7 Week execution plan · Progress saved locally · Jan–Mar 2026
+  </div>
+
+  <div id="weeks"></div>
+
+  <div class="footer">
+    Tip: You can check future items anytime. Progress is stored in localStorage on this device.
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = "frontend-interview-checklist-v1";
+
+  const data = [
+    {
+      title: "Week 1 – React, JS & TypeScript Stabilization",
+      items: [
+        "Explain React re-render behavior clearly",
+        "State colocation vs lifting state",
+        "Memoization trade-offs (useMemo / useCallback)",
+        "Controlled vs uncontrolled components",
+        "Error boundaries and fallback UX",
+        "JS event loop (microtasks vs macrotasks)",
+        "Closures with real-world examples",
+        "Async error handling patterns",
+        "TypeScript discriminated unions",
+        "Type-safe configuration objects",
+        "Resume – first impact-focused draft"
+      ]
+    },
+    {
+      title: "Week 2 – Frontend System Design",
+      items: [
+        "Design large data dashboard (virtualization vs pagination)",
+        "Server vs client aggregation reasoning",
+        "Caching strategy explanation",
+        "Permissions and role-based UI design",
+        "Frontend vs backend enforcement discussion",
+        "Config-driven UI architecture",
+        "Performance optimization strategy",
+        "API pagination and filtering concepts",
+        "Auth flows (JWT, OAuth basics)"
+      ]
+    },
+    {
+      title: "Week 3 – Senior Narrative & AI Story",
+      items: [
+        "Select one strong real-world project",
+        "Prepare 10–12 min project walkthrough",
+        "Explain architecture decisions",
+        "Explain trade-offs and constraints",
+        "Performance issues and fixes",
+        "How I use Copilot daily",
+        "How I review AI-generated code",
+        "Where I do NOT trust AI",
+        "Finalize resume aligned with case study"
+      ]
+    },
+    {
+      title: "Week 4 – Mock Interviews & Behavioral",
+      items: [
+        "Frontend system design mock #1",
+        "Frontend system design mock #2",
+        "React + JS deep dive mock",
+        "Behavioral mock interview",
+        "Prepare disagreement story",
+        "Prepare mentorship story",
+        "Prepare tech debt decision story"
+      ]
+    },
+    {
+      title: "Week 5 – Active Interviewing",
+      items: [
+        "Shortlist target companies",
+        "Start applications",
+        "Reach out for referrals",
+        "Company-specific prep (architecture & product)",
+        "Refine system design answers"
+      ]
+    },
+    {
+      title: "Week 6 – Interviews & Offers",
+      items: [
+        "Interview rounds ongoing",
+        "Clarify role expectations",
+        "Evaluate offers",
+        "Negotiate compensation",
+        "Final decision"
+      ]
+    }
+  ];
+
+  function loadState() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch {
+      return {};
+    }
+  }
+
+  function saveState(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  const state = loadState();
+  const weeksEl = document.getElementById("weeks");
+
+  data.forEach((week, weekIndex) => {
+    const weekEl = document.createElement("div");
+    weekEl.className = "week";
+
+    const header = document.createElement("div");
+    header.className = "week-header";
+
+    const title = document.createElement("div");
+    title.className = "week-title";
+    title.textContent = week.title;
+
+    const meta = document.createElement("div");
+    meta.className = "week-meta";
+    meta.textContent = "Click to expand";
+
+    header.appendChild(title);
+    header.appendChild(meta);
+    weekEl.appendChild(header);
+
+    const content = document.createElement("div");
+    content.className = "week-content checklist";
+
+    week.items.forEach((item, itemIndex) => {
+      const id = `w${weekIndex}-i${itemIndex}`;
+      const checked = state[id] === true;
+
+      const itemEl = document.createElement("div");
+      itemEl.className = "item" + (checked ? " completed" : "");
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = checked;
+
+      const label = document.createElement("label");
+      label.textContent = item;
+
+      checkbox.addEventListener("change", () => {
+        state[id] = checkbox.checked;
+        itemEl.classList.toggle("completed", checkbox.checked);
+        saveState(state);
+      });
+
+      itemEl.appendChild(checkbox);
+      itemEl.appendChild(label);
+      content.appendChild(itemEl);
+    });
+
+    weekEl.appendChild(content);
+
+    header.addEventListener("click", () => {
+      weekEl.classList.toggle("open");
+    });
+
+    weeksEl.appendChild(weekEl);
+  });
+</script>
+
+</body>
+</html>
