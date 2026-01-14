@@ -3,146 +3,135 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interview Prep – Mission Dashboard</title>
+<title>Interview Prep – Mission Control</title>
 
 <style>
 :root {
-  --bg: #020617;
-  --card: rgba(15,23,42,0.9);
-  --border: rgba(148,163,184,0.18);
-  --text: #e5e7eb;
-  --muted: #94a3b8;
+  --bg:#020617;
+  --card:rgba(15,23,42,.9);
+  --border:rgba(148,163,184,.18);
+  --text:#e5e7eb;
+  --muted:#94a3b8;
 
-  --frontend: #38bdf8;
-  --system: #a78bfa;
-  --js: #facc15;
-  --ai: #22c55e;
-  --backend: #fb7185;
-  --testing: #60a5fa;
-  --perf: #34d399;
-  --boss: #f43f5e;
-
-  --radius: 18px;
+  --frontend:#38bdf8;
+  --js:#facc15;
+  --system:#a78bfa;
+  --perf:#34d399;
+  --ai:#22c55e;
+  --backend:#fb7185;
+  --testing:#60a5fa;
+  --boss:#f43f5e;
 }
 
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: ui-sans-serif, system-ui;
-  background: radial-gradient(circle at top, #020617, #000);
-  color: var(--text);
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:ui-sans-serif,system-ui;
+  background:radial-gradient(circle at top,#020617,#000);
+  color:var(--text);
 }
 
-.container {
-  max-width: 520px;
-  margin: auto;
-  padding: 16px 14px 120px;
+.container{
+  max-width:540px;
+  margin:auto;
+  padding:16px 14px 120px;
 }
 
-h1 {
-  font-size: 22px;
-  margin: 0 0 16px;
+h1{font-size:22px;margin-bottom:16px}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:16px;
 }
 
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+.progress{
+  height:10px;
+  background:rgba(255,255,255,.12);
+  border-radius:999px;
+  overflow:hidden;
 }
 
-.progress {
-  height: 10px;
-  background: rgba(255,255,255,0.12);
-  border-radius: 999px;
-  overflow: hidden;
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,#38bdf8,#818cf8);
+  width:0%;
+  transition:width .3s ease;
 }
 
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #38bdf8, #818cf8);
-  width: 0%;
-  transition: width 0.4s ease;
+.mission{
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:14px;
+  background:rgba(255,255,255,.04);
 }
 
-/* MISSIONS */
-.mission {
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 14px;
-  margin-bottom: 14px;
-  background: rgba(255,255,255,0.04);
+.mission.completed{opacity:.55}
+
+.mission-title{
+  font-size:15px;
+  font-weight:600;
 }
 
-.mission.completed {
-  opacity: 0.5;
+.badge{
+  font-size:10px;
+  padding:2px 8px;
+  border-radius:999px;
+  margin-top:4px;
+  display:inline-block;
 }
 
-.mission-title {
-  font-weight: 600;
-  font-size: 15px;
+.frontend{background:rgba(56,189,248,.25)}
+.js{background:rgba(250,204,21,.25)}
+.system{background:rgba(167,139,250,.25)}
+.perf{background:rgba(52,211,153,.25)}
+.ai{background:rgba(34,197,94,.25)}
+.backend{background:rgba(251,113,133,.25)}
+.testing{background:rgba(96,165,250,.25)}
+.boss{background:rgba(244,63,94,.35)}
+
+.subtasks{
+  margin-top:10px;
+  padding-left:4px;
 }
 
-.badge {
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  display: inline-block;
-  margin-top: 4px;
+.subtask{
+  display:flex;
+  gap:8px;
+  font-size:13px;
+  margin-bottom:6px;
+  color:#cbd5f5;
 }
 
-.frontend { background: rgba(56,189,248,0.25); }
-.system { background: rgba(167,139,250,0.25); }
-.js { background: rgba(250,204,21,0.25); }
-.ai { background: rgba(34,197,94,0.25); }
-.backend { background: rgba(251,113,133,0.25); }
-.testing { background: rgba(96,165,250,0.25); }
-.perf { background: rgba(52,211,153,0.25); }
-.boss { background: rgba(244,63,94,0.35); }
+.subtask input{margin-top:2px}
 
-.mission-body {
-  font-size: 13px;
-  margin-top: 8px;
-  color: #cbd5f5;
+.actions{
+  margin-top:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-.proof {
-  font-size: 12px;
-  margin-top: 6px;
-  color: var(--muted);
-  font-style: italic;
+button{
+  border:1px solid var(--border);
+  background:none;
+  color:var(--text);
+  padding:6px 12px;
+  border-radius:999px;
+  cursor:pointer;
 }
 
-.actions {
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-button {
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 6px 12px;
-  color: var(--text);
-  cursor: pointer;
-}
-
-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
+button:disabled{opacity:.4;cursor:not-allowed}
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<h1>Interview Prep Missions</h1>
+<h1>Interview Prep – Mission Control</h1>
 
 <div class="card">
   <div style="display:flex;justify-content:space-between">
@@ -159,129 +148,153 @@ button:disabled {
 </div>
 
 <script>
-const STORAGE = "full-mission-dashboard-v1";
+const STORAGE="mission-subtasks-v1";
 
-/* ===== FULL MISSION SET (~40+) ===== */
-const missions = [
-  // FRONTEND CORE (10)
-  {id:"rerender",title:"Stop Unnecessary Re-renders",objective:"Explain why React components re-render.",proof:"3 causes + 2 fixes verbally.",xp:15,category:"frontend"},
-  {id:"state",title:"State Ownership",objective:"Place state correctly.",proof:"2 real examples explained.",xp:15,category:"frontend"},
-  {id:"memo",title:"Memoization Discipline",objective:"Avoid misuse of memo.",proof:"Explain when memo hurts.",xp:15,category:"frontend"},
-  {id:"forms",title:"Form Strategy",objective:"Choose controlled vs uncontrolled.",proof:"Explain trade-offs.",xp:10,category:"frontend"},
-  {id:"refs",title:"Refs & Imperative APIs",objective:"Use refs safely.",proof:"Explain 2 valid use cases.",xp:10,category:"frontend"},
-  {id:"suspense",title:"Suspense Clarity",objective:"Understand Suspense limits.",proof:"Explain what it solves.",xp:10,category:"frontend"},
-  {id:"errors",title:"Error Boundaries",objective:"Design failure UX.",proof:"Explain fallback + recovery.",xp:10,category:"frontend"},
-  {id:"accessibility",title:"Accessibility Basics",objective:"Avoid a11y regressions.",proof:"Explain keyboard + aria basics.",xp:10,category:"frontend"},
-  {id:"design-system",title:"Component API Design",objective:"Design reusable components.",proof:"Explain prop API trade-offs.",xp:15,category:"frontend"},
-  {id:"ui-arch",title:"Frontend Architecture",objective:"Structure large UI codebases.",proof:"Explain feature-based structure.",xp:15,category:"frontend"},
-
-  // JAVASCRIPT & TS (8)
-  {id:"eventloop",title:"Event Loop Mastery",objective:"Explain async execution.",proof:"Micro vs macro tasks.",xp:15,category:"js"},
-  {id:"closures",title:"Closures Confidence",objective:"Reason about closures.",proof:"Explain 2 real bugs.",xp:10,category:"js"},
-  {id:"this",title:"this Binding Rules",objective:"Understand JS this.",proof:"Explain all 4 rules.",xp:10,category:"js"},
-  {id:"immutability",title:"Immutability Patterns",objective:"Avoid mutation bugs.",proof:"Explain structural sharing.",xp:10,category:"js"},
-  {id:"async-errors",title:"Async Error Handling",objective:"Handle async failures.",proof:"Explain try/catch & promises.",xp:10,category:"js"},
-  {id:"ts-generics",title:"TypeScript Generics",objective:"Use generics effectively.",proof:"Explain 2 real cases.",xp:15,category:"js"},
-  {id:"ts-unions",title:"Discriminated Unions",objective:"Model complex state.",proof:"Explain union narrowing.",xp:10,category:"js"},
-  {id:"ts-perf",title:"TS Performance Awareness",objective:"Avoid slow builds.",proof:"Explain common causes.",xp:10,category:"js"},
-
-  // PERFORMANCE (5)
-  {id:"cwv",title:"Core Web Vitals",objective:"Understand CWV.",proof:"Explain LCP, CLS, INP.",xp:15,category:"perf"},
-  {id:"bundles",title:"Bundle Optimization",objective:"Reduce JS payload.",proof:"Explain code splitting.",xp:15,category:"perf"},
-  {id:"images",title:"Image Strategy",objective:"Optimize images.",proof:"Explain formats & loading.",xp:10,category:"perf"},
-  {id:"fonts",title:"Font Loading",objective:"Avoid font jank.",proof:"Explain preload vs swap.",xp:10,category:"perf"},
-  {id:"rerender-debug",title:"Render Debugging",objective:"Diagnose performance issues.",proof:"Explain profiling approach.",xp:15,category:"perf"},
-
-  // SYSTEM DESIGN (6)
-  {id:"dashboard",title:"1M Row Dashboard",objective:"Design scalable UI.",proof:"Virtualization vs pagination.",xp:25,category:"system"},
-  {id:"caching",title:"Client Caching",objective:"Reduce API calls.",proof:"Explain invalidation.",xp:15,category:"system"},
-  {id:"permissions",title:"Role-Based UI",objective:"Design permission UX.",proof:"Frontend vs backend roles.",xp:15,category:"system"},
-  {id:"config-ui",title:"Config-Driven UI",objective:"Build extensible UI.",proof:"Explain schema design.",xp:15,category:"system"},
-  {id:"i18n",title:"Internationalization",objective:"Support multiple locales.",proof:"Explain i18n pitfalls.",xp:10,category:"system"},
-  {id:"realtime",title:"Realtime Updates",objective:"Handle live data.",proof:"Explain polling vs websockets.",xp:10,category:"system"},
-
-  // BACKEND AWARENESS (4)
-  {id:"api-design",title:"API Consumption",objective:"Consume APIs safely.",proof:"Explain error contracts.",xp:10,category:"backend"},
-  {id:"pagination",title:"Pagination Patterns",objective:"Handle large datasets.",proof:"Cursor vs offset.",xp:10,category:"backend"},
-  {id:"auth",title:"Auth Flows",objective:"Understand auth.",proof:"JWT vs OAuth.",xp:10,category:"backend"},
-  {id:"rate-limit",title:"Rate Limiting",objective:"Handle limits gracefully.",proof:"Explain retry/backoff.",xp:10,category:"backend"},
-
-  // AI (4)
-  {id:"copilot",title:"Copilot Usage",objective:"Use AI effectively.",proof:"Explain daily workflow.",xp:15,category:"ai"},
-  {id:"ai-review",title:"AI Code Review",objective:"Review AI output.",proof:"Explain validation steps.",xp:15,category:"ai"},
-  {id:"ai-limits",title:"AI Failure Modes",objective:"Know AI limits.",proof:"Give 2 failure examples.",xp:10,category:"ai"},
-  {id:"ai-product",title:"AI in Product",objective:"Integrate AI safely.",proof:"Explain cost & guardrails.",xp:15,category:"ai"},
-
-  // TESTING (4)
-  {id:"unit-tests",title:"Unit Testing Strategy",objective:"Test logic properly.",proof:"Explain what not to test.",xp:10,category:"testing"},
-  {id:"rtl",title:"Component Testing",objective:"Test UI behavior.",proof:"Explain RTL philosophy.",xp:10,category:"testing"},
-  {id:"e2e",title:"E2E Testing",objective:"Test flows.",proof:"Explain Playwright usage.",xp:10,category:"testing"},
-  {id:"flaky",title:"Flaky Test Handling",objective:"Stabilize tests.",proof:"Explain mitigation.",xp:10,category:"testing"},
-
-  // FINAL BOSS
-  {
-    id:"boss-final",
-    title:"FINAL BOSS: Interview Ready",
-    objective:"Demonstrate full readiness.",
-    proof:"Confidently answer frontend, system, JS, AI questions.",
-    xp:100,
-    category:"boss",
-    requires:[
-      "rerender","state","memo","eventloop","dashboard",
-      "permissions","case","copilot","unit-tests"
-    ]
-  }
+/* ===== MISSIONS WITH SUBTASKS ===== */
+const missions=[
+{
+  id:"react-rerender",
+  title:"Stop Unnecessary Re-renders",
+  category:"frontend",
+  xp:20,
+  subtasks:[
+    "Explain when React re-renders",
+    "Explain state change vs parent render",
+    "Explain referential equality",
+    "Explain memo / useCallback trade-offs"
+  ]
+},
+{
+  id:"state-ownership",
+  title:"State Ownership Mastery",
+  category:"frontend",
+  xp:20,
+  subtasks:[
+    "Identify shared vs local state",
+    "Explain state colocation",
+    "Explain lifting state up",
+    "Give real project example"
+  ]
+},
+{
+  id:"event-loop",
+  title:"Event Loop Clarity",
+  category:"js",
+  xp:15,
+  subtasks:[
+    "Explain call stack",
+    "Explain microtasks",
+    "Explain macrotasks",
+    "Explain promise resolution order"
+  ]
+},
+{
+  id:"dashboard-design",
+  title:"Design a 1M Row Dashboard",
+  category:"system",
+  xp:30,
+  subtasks:[
+    "Explain pagination vs virtualization",
+    "Explain client vs server aggregation",
+    "Explain caching strategy",
+    "Explain performance trade-offs"
+  ]
+},
+{
+  id:"ai-usage",
+  title:"AI Usage as a Senior Engineer",
+  category:"ai",
+  xp:20,
+  subtasks:[
+    "Explain how you use Copilot",
+    "Explain how you review AI code",
+    "Explain where you avoid AI",
+    "Explain one AI failure"
+  ]
+},
+{
+  id:"boss-core",
+  title:"BOSS: Core Frontend Readiness",
+  category:"boss",
+  xp:60,
+  requires:["react-rerender","state-ownership","event-loop"],
+  subtasks:[
+    "Explain React internals confidently",
+    "Explain JS execution without confusion",
+    "Answer follow-up questions calmly"
+  ]
+}
 ];
 
-const state = JSON.parse(localStorage.getItem(STORAGE)) || {};
+const state=JSON.parse(localStorage.getItem(STORAGE))||{};
 
-function save(){ localStorage.setItem(STORAGE, JSON.stringify(state)); }
+function save(){localStorage.setItem(STORAGE,JSON.stringify(state));}
 
-function canComplete(m){
+function missionCompleted(m){
+  return m.subtasks.every((_,i)=>state[`${m.id}-s${i}`]);
+}
+
+function canCompleteBoss(m){
   if(!m.requires) return true;
-  return m.requires.every(id => state[id]);
+  return m.requires.every(id=>missionCompleted(missions.find(x=>x.id===id)));
 }
 
 function render(){
-  const el = document.getElementById("missions");
-  el.innerHTML = "";
-  let totalXP = 0;
+  const el=document.getElementById("missions");
+  el.innerHTML="";
+  let totalXP=0;
 
   missions.forEach(m=>{
-    if(state[m.id]) totalXP += m.xp;
+    const done=missionCompleted(m);
+    if(done) totalXP+=m.xp;
 
-    const div = document.createElement("div");
-    div.className = "mission" + (state[m.id] ? " completed" : "");
+    const div=document.createElement("div");
+    div.className="mission"+(done?" completed":"");
 
-    div.innerHTML = `
+    let subs="";
+    m.subtasks.forEach((s,i)=>{
+      const key=`${m.id}-s${i}`;
+      subs+=`
+        <div class="subtask">
+          <input type="checkbox" ${state[key]?"checked":""}/>
+          <label>${s}</label>
+        </div>`;
+    });
+
+    div.innerHTML=`
       <div class="mission-title">${m.title}</div>
       <span class="badge ${m.category}">${m.category.toUpperCase()}</span>
-      <div class="mission-body">${m.objective}</div>
-      <div class="proof">Proof: ${m.proof}</div>
+      <div class="subtasks">${subs}</div>
       <div class="actions">
         <span>+${m.xp} XP</span>
-        <button ${state[m.id] ? "disabled" : ""}>
-          ${state[m.id] ? "Completed" : "Mark Complete"}
+        <button ${done?"disabled":""}>
+          ${done?"Completed":"Complete Mission"}
         </button>
       </div>
     `;
 
-    div.querySelector("button").onclick = ()=>{
-      if(!canComplete(m)){
+    div.querySelectorAll("input").forEach((cb,i)=>{
+      cb.onchange=e=>{
+        state[`${m.id}-s${i}`]=e.target.checked;
+        save(); render();
+      };
+    });
+
+    div.querySelector("button").onclick=()=>{
+      if(m.category==="boss"&&!canCompleteBoss(m)){
         alert("Complete prerequisite missions first.");
         return;
       }
-      state[m.id] = true;
-      save();
-      render();
+      m.subtasks.forEach((_,i)=>state[`${m.id}-s${i}`]=true);
+      save(); render();
     };
 
     el.appendChild(div);
   });
 
-  document.getElementById("xp").textContent = totalXP;
-  document.getElementById("level").textContent = Math.floor(totalXP / 100) + 1;
-  document.getElementById("xpFill").style.width = (totalXP % 100) + "%";
+  document.getElementById("xp").textContent=totalXP;
+  document.getElementById("level").textContent=Math.floor(totalXP/50)+1;
+  document.getElementById("xpFill").style.width=(totalXP%50)*2+"%";
 }
 
 render();
