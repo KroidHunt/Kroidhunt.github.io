@@ -32,7 +32,7 @@ body{
 }
 
 .container{
-  max-width:540px;
+  max-width:560px;
   margin:auto;
   padding:16px 14px 120px;
 }
@@ -61,6 +61,7 @@ h1{font-size:22px;margin-bottom:16px}
   transition:width .3s ease;
 }
 
+/* MISSIONS */
 .mission{
   border:1px solid var(--border);
   border-radius:16px;
@@ -71,17 +72,14 @@ h1{font-size:22px;margin-bottom:16px}
 
 .mission.completed{opacity:.55}
 
-.mission-title{
-  font-size:15px;
-  font-weight:600;
-}
+.mission-title{font-size:15px;font-weight:600}
 
 .badge{
   font-size:10px;
   padding:2px 8px;
   border-radius:999px;
-  margin-top:4px;
   display:inline-block;
+  margin-top:4px;
 }
 
 .frontend{background:rgba(56,189,248,.25)}
@@ -93,20 +91,13 @@ h1{font-size:22px;margin-bottom:16px}
 .testing{background:rgba(96,165,250,.25)}
 .boss{background:rgba(244,63,94,.35)}
 
-.subtasks{
-  margin-top:10px;
-  padding-left:4px;
-}
-
+.subtasks{margin-top:10px}
 .subtask{
   display:flex;
   gap:8px;
   font-size:13px;
   margin-bottom:6px;
-  color:#cbd5f5;
 }
-
-.subtask input{margin-top:2px}
 
 .actions{
   margin-top:10px;
@@ -121,10 +112,36 @@ button{
   color:var(--text);
   padding:6px 12px;
   border-radius:999px;
-  cursor:pointer;
 }
 
-button:disabled{opacity:.4;cursor:not-allowed}
+button:disabled{opacity:.4}
+
+/* TROPHIES */
+.trophy-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.trophy{
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+  background:rgba(255,255,255,.04);
+  text-align:center;
+  font-size:13px;
+}
+
+.trophy.locked{opacity:.35}
+.trophy.unlocked{
+  box-shadow:0 0 20px rgba(56,189,248,.4);
+  animation:pop .4s ease;
+}
+
+@keyframes pop{
+  from{transform:scale(.9)}
+  to{transform:scale(1)}
+}
 </style>
 </head>
 
@@ -133,6 +150,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
 
 <h1>Interview Prep – Mission Control</h1>
 
+<!-- PROGRESS -->
 <div class="card">
   <div style="display:flex;justify-content:space-between">
     <div>Level <strong id="level">1</strong></div>
@@ -143,121 +161,95 @@ button:disabled{opacity:.4;cursor:not-allowed}
   </div>
 </div>
 
+<!-- TROPHIES -->
+<div class="card">
+  <h3 style="margin:0 0 10px">Achievements</h3>
+  <div class="trophy-grid" id="trophies"></div>
+</div>
+
+<!-- MISSIONS -->
 <div id="missions"></div>
 
 </div>
 
 <script>
-const STORAGE="mission-subtasks-v1";
+const STORAGE="mission-control-v2";
 
-/* ===== MISSIONS WITH SUBTASKS ===== */
+/* MISSIONS (sample subset – expand freely) */
 const missions=[
-{
-  id:"react-rerender",
-  title:"Stop Unnecessary Re-renders",
-  category:"frontend",
-  xp:20,
-  subtasks:[
-    "Explain when React re-renders",
-    "Explain state change vs parent render",
-    "Explain referential equality",
-    "Explain memo / useCallback trade-offs"
-  ]
-},
-{
-  id:"state-ownership",
-  title:"State Ownership Mastery",
-  category:"frontend",
-  xp:20,
-  subtasks:[
-    "Identify shared vs local state",
-    "Explain state colocation",
-    "Explain lifting state up",
-    "Give real project example"
-  ]
-},
-{
-  id:"event-loop",
-  title:"Event Loop Clarity",
-  category:"js",
-  xp:15,
-  subtasks:[
-    "Explain call stack",
-    "Explain microtasks",
-    "Explain macrotasks",
-    "Explain promise resolution order"
-  ]
-},
-{
-  id:"dashboard-design",
-  title:"Design a 1M Row Dashboard",
-  category:"system",
-  xp:30,
-  subtasks:[
-    "Explain pagination vs virtualization",
-    "Explain client vs server aggregation",
-    "Explain caching strategy",
-    "Explain performance trade-offs"
-  ]
-},
-{
-  id:"ai-usage",
-  title:"AI Usage as a Senior Engineer",
-  category:"ai",
-  xp:20,
-  subtasks:[
-    "Explain how you use Copilot",
-    "Explain how you review AI code",
-    "Explain where you avoid AI",
-    "Explain one AI failure"
-  ]
-},
-{
-  id:"boss-core",
-  title:"BOSS: Core Frontend Readiness",
-  category:"boss",
-  xp:60,
-  requires:["react-rerender","state-ownership","event-loop"],
-  subtasks:[
-    "Explain React internals confidently",
-    "Explain JS execution without confusion",
-    "Answer follow-up questions calmly"
-  ]
-}
+  {id:"rerender",title:"Stop Unnecessary Re-renders",category:"frontend",xp:20,subtasks:[
+    "Explain re-render triggers","Explain referential equality","Explain memo trade-offs"
+  ]},
+  {id:"state",title:"State Ownership",category:"frontend",xp:20,subtasks:[
+    "Colocation vs lifting","Global vs local state","Real example"
+  ]},
+  {id:"eventloop",title:"Event Loop Clarity",category:"js",xp:15,subtasks:[
+    "Call stack","Microtasks","Macrotasks","Promise order"
+  ]},
+  {id:"ai",title:"AI Usage as Senior",category:"ai",xp:20,subtasks:[
+    "Copilot usage","Review strategy","Failure examples"
+  ]},
+  {id:"boss",title:"FINAL BOSS: Interview Ready",category:"boss",xp:80,
+    requires:["rerender","state","eventloop","ai"],
+    subtasks:["Explain confidently","Handle follow-ups","No hesitation"]
+  }
+];
+
+/* TROPHIES */
+const trophiesDef=[
+  {id:"first",icon:"🏁",label:"First Mission",check:s=>s.missions>=1},
+  {id:"ten",icon:"🔥",label:"10 Missions Done",check:s=>s.missions>=10},
+  {id:"frontend",icon:"🧠",label:"Frontend Core",check:s=>s.frontend>=2},
+  {id:"ai",icon:"🤖",label:"AI Ready",check:s=>s.ai>=1},
+  {id:"final",icon:"🏆",label:"Interview Ready",check:s=>s.boss}
 ];
 
 const state=JSON.parse(localStorage.getItem(STORAGE))||{};
-
 function save(){localStorage.setItem(STORAGE,JSON.stringify(state));}
 
-function missionCompleted(m){
+function missionDone(m){
   return m.subtasks.every((_,i)=>state[`${m.id}-s${i}`]);
 }
 
-function canCompleteBoss(m){
-  if(!m.requires) return true;
-  return m.requires.every(id=>missionCompleted(missions.find(x=>x.id===id)));
+function canBoss(m){
+  return !m.requires||m.requires.every(id=>{
+    const mm=missions.find(x=>x.id===id);
+    return missionDone(mm);
+  });
+}
+
+function stats(){
+  let s={missions:0,frontend:0,ai:0,boss:false};
+  missions.forEach(m=>{
+    if(missionDone(m)){
+      s.missions++;
+      if(m.category==="frontend") s.frontend++;
+      if(m.category==="ai") s.ai++;
+      if(m.category==="boss") s.boss=true;
+    }
+  });
+  return s;
 }
 
 function render(){
-  const el=document.getElementById("missions");
-  el.innerHTML="";
-  let totalXP=0;
+  const mEl=document.getElementById("missions");
+  mEl.innerHTML="";
+  let xp=0;
 
   missions.forEach(m=>{
-    const done=missionCompleted(m);
-    if(done) totalXP+=m.xp;
+    const done=missionDone(m);
+    if(done) xp+=m.xp;
 
     const div=document.createElement("div");
     div.className="mission"+(done?" completed":"");
 
     let subs="";
-    m.subtasks.forEach((s,i)=>{
-      const key=`${m.id}-s${i}`;
+    m.subtasks.forEach((t,i)=>{
+      const k=`${m.id}-s${i}`;
       subs+=`
         <div class="subtask">
-          <input type="checkbox" ${state[key]?"checked":""}/>
-          <label>${s}</label>
+          <input type="checkbox" ${state[k]?"checked":""}/>
+          <label>${t}</label>
         </div>`;
     });
 
@@ -267,9 +259,7 @@ function render(){
       <div class="subtasks">${subs}</div>
       <div class="actions">
         <span>+${m.xp} XP</span>
-        <button ${done?"disabled":""}>
-          ${done?"Completed":"Complete Mission"}
-        </button>
+        <button ${done?"disabled":""}>Complete Mission</button>
       </div>
     `;
 
@@ -281,20 +271,33 @@ function render(){
     });
 
     div.querySelector("button").onclick=()=>{
-      if(m.category==="boss"&&!canCompleteBoss(m)){
-        alert("Complete prerequisite missions first.");
+      if(m.category==="boss"&&!canBoss(m)){
+        alert("Complete prerequisites first");
         return;
       }
       m.subtasks.forEach((_,i)=>state[`${m.id}-s${i}`]=true);
       save(); render();
     };
 
-    el.appendChild(div);
+    mEl.appendChild(div);
   });
 
-  document.getElementById("xp").textContent=totalXP;
-  document.getElementById("level").textContent=Math.floor(totalXP/50)+1;
-  document.getElementById("xpFill").style.width=(totalXP%50)*2+"%";
+  // XP + Level
+  document.getElementById("xp").textContent=xp;
+  document.getElementById("level").textContent=Math.floor(xp/50)+1;
+  document.getElementById("xpFill").style.width=(xp%50)*2+"%";
+
+  // TROPHIES
+  const tEl=document.getElementById("trophies");
+  tEl.innerHTML="";
+  const s=stats();
+  trophiesDef.forEach(t=>{
+    const unlocked=t.check(s);
+    const d=document.createElement("div");
+    d.className="trophy "+(unlocked?"unlocked":"locked");
+    d.textContent=`${t.icon} ${t.label}`;
+    tEl.appendChild(d);
+  });
 }
 
 render();
