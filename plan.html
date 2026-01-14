@@ -6,96 +6,50 @@
 <title>Interview Prep Dashboard</title>
 
 <style>
-/* =========================
-   SHADCN DESIGN TOKENS
-========================= */
+/* ======================
+   COLOR & THEME TOKENS
+====================== */
 :root {
-  --background: #0b0b0c;
-  --foreground: #e5e7eb;
-  --card: #111113;
-  --border: #1f1f23;
-  --muted: #9ca3af;
-  --primary: #3b82f6;
+  --bg: radial-gradient(circle at top, #0f172a, #020617);
+  --card-bg: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.12);
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --primary: linear-gradient(135deg, #38bdf8, #6366f1);
   --success: #22c55e;
   --warning: #facc15;
-  --radius: 14px;
+  --glass: blur(14px);
 }
 
 [data-theme="light"] {
-  --background: #f9fafb;
-  --foreground: #111827;
-  --card: #ffffff;
-  --border: #e5e7eb;
-  --muted: #6b7280;
-  --primary: #2563eb;
+  --bg: radial-gradient(circle at top, #eef2ff, #ffffff);
+  --card-bg: rgba(255,255,255,0.75);
+  --border: rgba(15,23,42,0.12);
+  --text: #020617;
+  --muted: #475569;
 }
 
-/* =========================
+/* ======================
    BASE
-========================= */
+====================== */
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
   font-family: ui-sans-serif, system-ui;
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg);
+  color: var(--text);
 }
 
 .container {
   max-width: 480px;
-  margin: 0 auto;
+  margin: auto;
   padding: 16px 14px 96px;
 }
 
-/* =========================
-   SHADCN-LIKE COMPONENTS
-========================= */
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px;
-  margin-bottom: 14px;
-}
-
-.button {
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--foreground);
-  border-radius: 10px;
-  padding: 6px 12px;
-  cursor: pointer;
-}
-
-.badge {
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 999px;
-}
-
-.progress {
-  height: 8px;
-  background: #ffffff22;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: var(--primary);
-  width: 0%;
-  transition: width 0.3s ease;
-}
-
-.muted {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-/* =========================
+/* ======================
    HEADER
-========================= */
+====================== */
 header {
   display: flex;
   justify-content: space-between;
@@ -103,18 +57,93 @@ header {
   margin-bottom: 16px;
 }
 
-/* =========================
+h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+button {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  backdrop-filter: var(--glass);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+/* ======================
+   CARDS
+====================== */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+/* ======================
+   XP / LEVEL
+====================== */
+.level {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress {
+  height: 10px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary);
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+/* ======================
+   TROPHIES
+====================== */
+.trophy {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  font-size: 14px;
+}
+
+.trophy.locked {
+  opacity: 0.35;
+}
+
+.trophy.unlocked {
+  animation: pop 0.4s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+/* ======================
    TIMELINE
-========================= */
+====================== */
 .timeline {
   position: relative;
-  padding-left: 18px;
+  padding-left: 22px;
 }
 
 .timeline::before {
   content: "";
   position: absolute;
-  left: 6px;
+  left: 9px;
   top: 0;
   bottom: 0;
   width: 2px;
@@ -123,24 +152,30 @@ header {
 
 .task {
   position: relative;
-  padding: 12px 0 12px 12px;
+  padding: 14px 0 14px 14px;
 }
 
 .dot {
   position: absolute;
-  left: -1px;
-  top: 18px;
-  width: 12px;
-  height: 12px;
+  left: 2px;
+  top: 22px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: var(--border);
+  background: rgba(255,255,255,0.25);
 }
 
-.task.completed .dot { background: var(--success); }
-.task.today .dot { background: var(--warning); }
+.task.today .dot {
+  background: var(--warning);
+  box-shadow: 0 0 0 6px rgba(250,204,21,0.25);
+}
+
+.task.completed .dot {
+  background: var(--success);
+}
 
 .task label {
-  cursor: pointer;
+  font-size: 15px;
 }
 
 .task.completed label {
@@ -148,19 +183,9 @@ header {
   color: var(--success);
 }
 
-/* =========================
-   TROPHIES
-========================= */
-.trophy {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  padding: 8px 0;
-}
-
-.trophy.locked {
-  opacity: 0.4;
+.muted {
+  font-size: 12px;
+  color: var(--muted);
 }
 </style>
 </head>
@@ -169,21 +194,21 @@ header {
 <div class="container">
 
 <header>
-  <h2>Interview Prep</h2>
-  <button class="button" id="themeToggle">Theme</button>
+  <h1>Interview Prep</h1>
+  <button id="themeToggle">Theme</button>
 </header>
 
-<!-- XP / LEVEL -->
+<!-- LEVEL -->
 <div class="card">
-  <div style="display:flex;justify-content:space-between">
+  <div class="level">
     <div>Level <strong id="level">1</strong></div>
     <div><strong id="xp">0</strong> XP</div>
   </div>
-  <div class="progress" style="margin-top:8px">
+  <div class="progress">
     <div class="progress-fill" id="xpBar"></div>
   </div>
-  <div class="muted" style="margin-top:6px">
-    10 XP per task · Trophies unlock automatically
+  <div class="muted" style="margin-top:8px">
+    Complete tasks to unlock trophies
   </div>
 </div>
 
@@ -199,10 +224,7 @@ header {
 </div>
 
 <script>
-/* =========================
-   DATA
-========================= */
-const STORAGE = "prep-dashboard-v4";
+const STORAGE = "prep-dashboard-v5";
 const THEME = "prep-theme";
 const startDate = new Date("2026-01-15");
 
@@ -215,7 +237,7 @@ const tasks = [
   "Closures",
   "Type-safe configs",
   "Resume first draft",
-  "Large data dashboards",
+  "System design dashboard",
   "Caching strategies",
   "Permissions UI",
   "Config-driven UI",
@@ -229,42 +251,20 @@ const tasks = [
   "Offer negotiation"
 ];
 
-const trophiesDef = [
-  { id: "first", label: "🏁 First Task Completed", check: c => c >= 1 },
-  { id: "five", label: "🔥 5 Tasks Done", check: c => c >= 5 },
-  { id: "ten", label: "🚀 10 Tasks Done", check: c => c >= 10 },
-  { id: "ai", label: "🤖 AI Ready", check: (_, s) => s["t15"] },
-  { id: "ready", label: "🏆 Interview Ready", check: c => c === tasks.length }
+const trophies = [
+  { label: "🏁 First Step", at: 1 },
+  { label: "🔥 Momentum", at: 5 },
+  { label: "🚀 Consistency", at: 10 },
+  { label: "🤖 AI Ready", at: 16 },
+  { label: "🏆 Interview Ready", at: tasks.length }
 ];
 
-/* =========================
-   STATE
-========================= */
 const state = JSON.parse(localStorage.getItem(STORAGE)) || {};
 
 function save() {
   localStorage.setItem(STORAGE, JSON.stringify(state));
 }
 
-/* =========================
-   HELPERS
-========================= */
-function taskDate(i) {
-  const d = new Date(startDate);
-  d.setDate(d.getDate() + i);
-  return d;
-}
-
-function status(d) {
-  const diff = Math.floor((new Date() - d) / 86400000);
-  if (diff === 0) return "today";
-  if (diff > 0) return "past";
-  return "future";
-}
-
-/* =========================
-   RENDER
-========================= */
 function render() {
   const taskEl = document.getElementById("tasks");
   taskEl.innerHTML = "";
@@ -273,20 +273,23 @@ function render() {
 
   tasks.forEach((text, i) => {
     const id = "t" + i;
-    const checked = !!state[id];
-    if (checked) completed++;
+    const done = !!state[id];
+    if (done) completed++;
 
-    const d = taskDate(i);
-    const s = status(d);
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + i);
+
+    const diff = Math.floor((new Date() - date) / 86400000);
+    const today = diff === 0;
 
     const el = document.createElement("div");
-    el.className = `task ${checked ? "completed" : ""} ${s === "today" ? "today" : ""}`;
+    el.className = `task ${done ? "completed" : ""} ${today ? "today" : ""}`;
 
     el.innerHTML = `
       <div class="dot"></div>
-      <input type="checkbox" ${checked ? "checked" : ""} />
+      <input type="checkbox" ${done ? "checked" : ""} />
       <label>${text}</label>
-      <div class="muted">${d.toDateString()}</div>
+      <div class="muted">${date.toDateString()}</div>
     `;
 
     el.querySelector("input").onchange = e => {
@@ -306,20 +309,18 @@ function render() {
   document.getElementById("xpBar").style.width = (xp % 100) + "%";
 
   // Trophies
-  const trophyEl = document.getElementById("trophies");
-  trophyEl.innerHTML = "";
-  trophiesDef.forEach(t => {
-    const unlocked = t.check(completed, state);
+  const tEl = document.getElementById("trophies");
+  tEl.innerHTML = "";
+  trophies.forEach(t => {
+    const unlocked = completed >= t.at;
     const div = document.createElement("div");
-    div.className = "trophy" + (unlocked ? "" : " locked");
+    div.className = "trophy " + (unlocked ? "unlocked" : "locked");
     div.textContent = t.label;
-    trophyEl.appendChild(div);
+    tEl.appendChild(div);
   });
 }
 
-/* =========================
-   THEME
-========================= */
+// Theme
 document.documentElement.dataset.theme =
   localStorage.getItem(THEME) || "dark";
 
