@@ -1,306 +1,2263 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interview Prep – Mission Control</title>
-
-<style>
-:root {
-  --bg:#020617;
-  --card:rgba(15,23,42,.9);
-  --border:rgba(148,163,184,.18);
-  --text:#e5e7eb;
-  --muted:#94a3b8;
-
-  --frontend:#38bdf8;
-  --js:#facc15;
-  --system:#a78bfa;
-  --perf:#34d399;
-  --ai:#22c55e;
-  --backend:#fb7185;
-  --testing:#60a5fa;
-  --boss:#f43f5e;
-}
-
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:ui-sans-serif,system-ui;
-  background:radial-gradient(circle at top,#020617,#000);
-  color:var(--text);
-}
-
-.container{
-  max-width:560px;
-  margin:auto;
-  padding:16px 14px 120px;
-}
-
-h1{font-size:22px;margin-bottom:16px}
-
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:16px;
-  margin-bottom:16px;
-}
-
-.progress{
-  height:10px;
-  background:rgba(255,255,255,.12);
-  border-radius:999px;
-  overflow:hidden;
-}
-
-.progress-fill{
-  height:100%;
-  background:linear-gradient(90deg,#38bdf8,#818cf8);
-  width:0%;
-  transition:width .3s ease;
-}
-
-/* MISSIONS */
-.mission{
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:14px;
-  margin-bottom:14px;
-  background:rgba(255,255,255,.04);
-}
-
-.mission.completed{opacity:.55}
-
-.mission-title{font-size:15px;font-weight:600}
-
-.badge{
-  font-size:10px;
-  padding:2px 8px;
-  border-radius:999px;
-  display:inline-block;
-  margin-top:4px;
-}
-
-.frontend{background:rgba(56,189,248,.25)}
-.js{background:rgba(250,204,21,.25)}
-.system{background:rgba(167,139,250,.25)}
-.perf{background:rgba(52,211,153,.25)}
-.ai{background:rgba(34,197,94,.25)}
-.backend{background:rgba(251,113,133,.25)}
-.testing{background:rgba(96,165,250,.25)}
-.boss{background:rgba(244,63,94,.35)}
-
-.subtasks{margin-top:10px}
-.subtask{
-  display:flex;
-  gap:8px;
-  font-size:13px;
-  margin-bottom:6px;
-}
-
-.actions{
-  margin-top:10px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-button{
-  border:1px solid var(--border);
-  background:none;
-  color:var(--text);
-  padding:6px 12px;
-  border-radius:999px;
-}
-
-button:disabled{opacity:.4}
-
-/* TROPHIES */
-.trophy-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-}
-
-.trophy{
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:12px;
-  background:rgba(255,255,255,.04);
-  text-align:center;
-  font-size:13px;
-}
-
-.trophy.locked{opacity:.35}
-.trophy.unlocked{
-  box-shadow:0 0 20px rgba(56,189,248,.4);
-  animation:pop .4s ease;
-}
-
-@keyframes pop{
-  from{transform:scale(.9)}
-  to{transform:scale(1)}
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0d0d0d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>The Developer's Journey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-darkest: #0d0d0d;
+            --bg-darker: #141414;
+            --bg-dark: #1a1a1a;
+            --bg-medium: #222222;
+            --bg-light: #2a2a2a;
+            --bg-lighter: #363636;
+            
+            --ember: #ff6b35;
+            --ember-glow: #ff8c5a;
+            --ember-dark: #cc4a1a;
+            --soul-blue: #4fc3f7;
+            --soul-blue-glow: #81d4fa;
+            --rune-gold: #ffd700;
+            --rune-gold-dim: #b8960b;
+            --blood-red: #8b0000;
+            --estus-orange: #ff9800;
+            --bonfire-yellow: #ffb74d;
+            
+            --text-primary: #f0f0f0;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            
+            --success: #4caf50;
+            --success-dim: #2e7d32;
+            
+            --border-color: #333333;
+            
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+            
+            --nav-height: 70px;
+            --header-height: 60px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-darkest);
+            color: var(--text-primary);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            overflow-x: hidden;
+            overscroll-behavior-y: contain;
+        }
+        
+        body {
+            padding-bottom: calc(var(--nav-height) + var(--safe-bottom));
+        }
+        
+        /* Scrollbar - thin for mobile */
+        ::-webkit-scrollbar {
+            width: 3px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-lighter);
+            border-radius: 3px;
+        }
+        
+        /* ============================================
+           HEADER - Compact Mobile Header
+           ============================================ */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: calc(var(--header-height) + var(--safe-top));
+            padding-top: var(--safe-top);
+            background: linear-gradient(180deg, var(--bg-darkest) 0%, rgba(13,13,13,0.98) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-left: 16px;
+            padding-right: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .level-badge {
+            width: 42px;
+            height: 42px;
+            background: radial-gradient(circle, var(--ember) 0%, var(--bg-darkest) 70%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--rune-gold);
+            box-shadow: 0 0 15px rgba(255, 107, 53, 0.4);
+        }
+        
+        .header-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header-title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            color: var(--ember);
+            line-height: 1.2;
+        }
+        
+        .header-subtitle {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        
+        .header-stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .header-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .header-stat-icon {
+            font-size: 0.9rem;
+        }
+        
+        .header-stat-value {
+            color: var(--rune-gold);
+            font-weight: 600;
+        }
+        
+        /* ============================================
+           MAIN CONTENT AREA
+           ============================================ */
+        .main-content {
+            padding-top: calc(var(--header-height) + var(--safe-top));
+            min-height: 100vh;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* ============================================
+           PROFILE TAB
+           ============================================ */
+        .profile-tab {
+            padding: 16px;
+        }
+        
+        .profile-hero {
+            text-align: center;
+            padding: 25px 20px;
+            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-darkest) 100%);
+            border-radius: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .profile-emblem {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 16px;
+            background: radial-gradient(circle, var(--ember) 0%, var(--ember-dark) 40%, var(--bg-darkest) 70%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--rune-gold);
+            box-shadow: 0 0 40px rgba(255, 107, 53, 0.5), inset 0 0 30px rgba(0,0,0,0.5);
+            animation: emblem-pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes emblem-pulse {
+            0%, 100% { box-shadow: 0 0 40px rgba(255, 107, 53, 0.4), inset 0 0 30px rgba(0,0,0,0.5); }
+            50% { box-shadow: 0 0 60px rgba(255, 107, 53, 0.6), inset 0 0 30px rgba(0,0,0,0.5); }
+        }
+        
+        .profile-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: var(--ember);
+            margin-bottom: 4px;
+        }
+        
+        .profile-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        
+        .xp-container {
+            background: var(--bg-darker);
+            border-radius: 12px;
+            padding: 3px;
+            margin-bottom: 8px;
+        }
+        
+        .xp-bar {
+            height: 18px;
+            background: linear-gradient(90deg, var(--ember-dark) 0%, var(--ember) 50%, var(--ember-glow) 100%);
+            border-radius: 10px;
+            position: relative;
+            transition: width 0.5s ease;
+        }
+        
+        .xp-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 100%);
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .xp-text {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        
+        .stat-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+        }
+        
+        .stat-card-icon {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+        
+        .stat-card-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--rune-gold);
+            margin-bottom: 2px;
+        }
+        
+        .stat-card-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Streak Card */
+        .streak-card {
+            background: linear-gradient(135deg, var(--bg-dark) 0%, rgba(255, 107, 53, 0.1) 100%);
+            border: 1px solid var(--ember-dark);
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .streak-flame {
+            font-size: 2.5rem;
+            animation: flame-dance 0.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes flame-dance {
+            from { transform: scale(1) rotate(-3deg); }
+            to { transform: scale(1.1) rotate(3deg); }
+        }
+        
+        .streak-info {
+            flex: 1;
+        }
+        
+        .streak-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--ember);
+            line-height: 1;
+        }
+        
+        .streak-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        
+        /* Daily Goals */
+        .daily-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .daily-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .daily-title {
+            font-family: 'Cinzel', serif;
+            color: var(--estus-orange);
+            font-size: 1rem;
+        }
+        
+        .goal-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px;
+            background: var(--bg-medium);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        .goal-item:active {
+            transform: scale(0.98);
+            background: var(--bg-light);
+        }
+        
+        .goal-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .goal-checkbox {
+            width: 26px;
+            height: 26px;
+            border: 2px solid var(--ember);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        
+        .goal-item.completed .goal-checkbox {
+            background: var(--ember);
+            border-color: var(--ember);
+        }
+        
+        .goal-checkbox::after {
+            content: '✓';
+            color: transparent;
+            font-size: 14px;
+            font-weight: bold;
+            transition: color 0.2s ease;
+        }
+        
+        .goal-item.completed .goal-checkbox::after {
+            color: white;
+        }
+        
+        .goal-text {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+        
+        .goal-item.completed .goal-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+        
+        /* Target Date */
+        .target-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+        }
+        
+        .target-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .target-title {
+            font-family: 'Cinzel', serif;
+            color: var(--soul-blue);
+            font-size: 1rem;
+        }
+        
+        .target-input {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-medium);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        
+        .target-countdown {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--bg-medium) 0%, rgba(79, 195, 247, 0.1) 100%);
+            border-radius: 12px;
+        }
+        
+        .countdown-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--soul-blue);
+            line-height: 1;
+        }
+        
+        .countdown-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.3;
+        }
+        
+        /* ============================================
+           SKILLS TAB
+           ============================================ */
+        .skills-tab {
+            padding: 12px;
+        }
+        
+        /* Search Bar */
+        .search-bar {
+            position: sticky;
+            top: calc(var(--header-height) + var(--safe-top));
+            z-index: 50;
+            padding: 8px 0;
+            background: var(--bg-darkest);
+            margin-bottom: 8px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--ember);
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        /* Filter Pills */
+        .filter-pills {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0 12px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .filter-pills::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .filter-pill {
+            padding: 10px 18px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        .filter-pill:active {
+            transform: scale(0.95);
+        }
+        
+        .filter-pill.active {
+            background: var(--ember);
+            color: white;
+            border-color: var(--ember);
+        }
+        
+        /* Category Card */
+        .category-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: border-color 0.2s ease;
+        }
+        
+        .category-card.expanded {
+            border-color: var(--ember);
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        .category-header:active {
+            background: var(--bg-medium);
+        }
+        
+        .category-icon {
+            font-size: 1.8rem;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-darker);
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+        
+        .category-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .category-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .category-progress-bar {
+            height: 5px;
+            background: var(--bg-darker);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .category-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--ember-dark), var(--ember));
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .category-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .category-count {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .category-boss-badge {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            background: var(--bg-darker);
+            border-radius: 10px;
+            color: var(--text-muted);
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .category-boss-badge.defeated {
+            background: linear-gradient(135deg, var(--ember-dark), var(--rune-gold-dim));
+            color: white;
+        }
+        
+        .category-toggle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .category-card.expanded .category-toggle {
+            transform: rotate(180deg);
+        }
+        
+        /* Skills Container */
+        .skills-container {
+            display: none;
+            padding: 0 12px 12px;
+        }
+        
+        .category-card.expanded .skills-container {
+            display: block;
+        }
+        
+        .subcategory {
+            margin-bottom: 16px;
+        }
+        
+        .subcategory:last-child {
+            margin-bottom: 0;
+        }
+        
+        .subcategory-title {
+            font-size: 0.8rem;
+            color: var(--soul-blue);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* Skill Item */
+        .skill-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: var(--bg-medium);
+            border-radius: 12px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-user-select: none;
+            user-select: none;
+            border: 1px solid transparent;
+        }
+        
+        .skill-item:active {
+            transform: scale(0.98);
+        }
+        
+        .skill-item.completed {
+            border-color: var(--success-dim);
+            background: rgba(76, 175, 80, 0.1);
+        }
+        
+        .skill-checkbox {
+            width: 28px;
+            height: 28px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        
+        .skill-item.completed .skill-checkbox {
+            background: var(--success);
+            border-color: var(--success);
+        }
+        
+        .skill-checkbox::after {
+            content: '✓';
+            color: transparent;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .skill-item.completed .skill-checkbox::after {
+            color: white;
+        }
+        
+        .skill-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .skill-name {
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        
+        .skill-item.completed .skill-name {
+            color: var(--success);
+        }
+        
+        .skill-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .skill-level {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: var(--bg-darker);
+            text-transform: capitalize;
+        }
+        
+        .skill-level.basic { color: var(--text-secondary); }
+        .skill-level.intermediate { color: var(--soul-blue); background: rgba(79, 195, 247, 0.15); }
+        .skill-level.advanced { color: var(--ember); background: rgba(255, 107, 53, 0.15); }
+        .skill-level.expert { color: var(--rune-gold); background: rgba(255, 215, 0, 0.15); }
+        
+        .skill-runes {
+            font-size: 0.75rem;
+            color: var(--rune-gold);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        /* ============================================
+           ACHIEVEMENTS TAB
+           ============================================ */
+        .achievements-tab {
+            padding: 12px;
+        }
+        
+        .achievements-section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        
+        .achievement-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .achievement-card.locked {
+            opacity: 0.5;
+        }
+        
+        .achievement-card.unlocked {
+            border-color: var(--rune-gold-dim);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
+        }
+        
+        .achievement-icon {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .achievement-card.locked .achievement-icon {
+            filter: grayscale(1);
+        }
+        
+        .achievement-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .achievement-card.locked .achievement-name {
+            color: var(--text-muted);
+        }
+        
+        .achievement-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        
+        /* Boss Section */
+        .boss-section {
+            margin-top: 24px;
+        }
+        
+        .boss-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
+        }
+        
+        .boss-card.defeated {
+            border-color: var(--ember-dark);
+            background: linear-gradient(135deg, var(--bg-dark) 0%, rgba(255, 107, 53, 0.1) 100%);
+        }
+        
+        .boss-icon {
+            font-size: 1.8rem;
+        }
+        
+        .boss-card.locked .boss-icon {
+            filter: grayscale(1);
+            opacity: 0.4;
+        }
+        
+        .boss-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .boss-name {
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .boss-card.defeated .boss-name {
+            color: var(--ember);
+        }
+        
+        .boss-card.locked .boss-name {
+            color: var(--text-muted);
+        }
+        
+        .boss-category {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .boss-status {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: var(--bg-darker);
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+        
+        .boss-card.defeated .boss-status {
+            background: var(--ember);
+            color: white;
+        }
+        
+        /* ============================================
+           BOTTOM NAVIGATION
+           ============================================ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(var(--nav-height) + var(--safe-bottom));
+            padding-bottom: var(--safe-bottom);
+            background: var(--bg-darker);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-user-select: none;
+            user-select: none;
+            border-radius: 12px;
+        }
+        
+        .nav-item:active {
+            transform: scale(0.9);
+        }
+        
+        .nav-icon {
+            font-size: 1.4rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .nav-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            transition: color 0.2s ease;
+        }
+        
+        .nav-item.active .nav-icon {
+            transform: scale(1.15);
+        }
+        
+        .nav-item.active .nav-label {
+            color: var(--ember);
+        }
+        
+        /* ============================================
+           TOAST NOTIFICATIONS
+           ============================================ */
+        .toast-container {
+            position: fixed;
+            top: calc(var(--header-height) + var(--safe-top) + 8px);
+            left: 12px;
+            right: 12px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+        
+        .toast {
+            background: var(--bg-dark);
+            border: 2px solid var(--rune-gold);
+            border-radius: 14px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: toast-in 0.4s ease, toast-out 0.4s ease 2.2s forwards;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        @keyframes toast-out {
+            from { opacity: 1; transform: translateY(0) scale(1); }
+            to { opacity: 0; transform: translateY(-20px) scale(0.9); }
+        }
+        
+        .toast-icon {
+            font-size: 1.3rem;
+        }
+        
+        .toast-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .toast-title {
+            font-family: 'Cinzel', serif;
+            color: var(--rune-gold);
+            font-size: 0.95rem;
+        }
+        
+        .toast-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* ============================================
+           ACHIEVEMENT BANNER
+           ============================================ */
+        .achievement-banner {
+            position: fixed;
+            bottom: calc(var(--nav-height) + var(--safe-bottom));
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, transparent 0%, var(--bg-darkest) 30%, var(--bg-dark) 100%);
+            padding: 30px 20px 25px;
+            text-align: center;
+            z-index: 1001;
+            animation: banner-slide 0.6s ease, banner-out 0.4s ease 2.5s forwards;
+            border-top: 2px solid var(--rune-gold);
+            box-shadow: 0 -10px 50px rgba(255, 215, 0, 0.3);
+        }
+        
+        @keyframes banner-slide {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        @keyframes banner-out {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(100%); opacity: 0; }
+        }
+        
+        .banner-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            animation: banner-pulse 0.3s ease infinite alternate;
+        }
+        
+        @keyframes banner-pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.15); }
+        }
+        
+        .banner-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--rune-gold);
+            margin-bottom: 4px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .banner-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* ============================================
+           MODAL / BOTTOM SHEET
+           ============================================ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-sheet {
+            background: var(--bg-dark);
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            padding-bottom: calc(20px + var(--safe-bottom));
+            width: 100%;
+            max-height: 80vh;
+            animation: sheet-up 0.3s ease;
+        }
+        
+        @keyframes sheet-up {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--bg-lighter);
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+        
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--ember);
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        
+        .modal-text {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-btn:active {
+            transform: scale(0.97);
+        }
+        
+        .modal-btn.primary {
+            background: var(--ember);
+            color: white;
+        }
+        
+        .modal-btn.secondary {
+            background: var(--bg-medium);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        /* ============================================
+           DESKTOP STYLES (Tablet and above)
+           ============================================ */
+        @media (min-width: 768px) {
+            .main-content {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .achievements-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            :root {
+                --header-height: 70px;
+                --nav-height: 0px;
+            }
+            
+            body {
+                padding-bottom: 0;
+            }
+            
+            .bottom-nav {
+                display: none;
+            }
+            
+            .main-content {
+                display: grid;
+                grid-template-columns: 320px 1fr 300px;
+                gap: 24px;
+                max-width: 1400px;
+                padding: 24px;
+            }
+            
+            .tab-content {
+                display: block !important;
+            }
+            
+            .profile-tab {
+                position: sticky;
+                top: calc(var(--header-height) + 24px);
+                height: fit-content;
+            }
+            
+            .achievements-tab {
+                position: sticky;
+                top: calc(var(--header-height) + 24px);
+                height: fit-content;
+                max-height: calc(100vh - var(--header-height) - 48px);
+                overflow-y: auto;
+            }
+            
+            .search-bar {
+                top: calc(var(--header-height) + 24px);
+            }
+        }
+    </style>
 </head>
-
 <body>
-<div class="container">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="level-badge" id="headerLevel">1</div>
+            <div class="header-info">
+                <div class="header-title" id="headerTitle">Hollow Developer</div>
+                <div class="header-subtitle" id="headerSubtitle">Lost, seeking purpose</div>
+            </div>
+        </div>
+        <div class="header-stats">
+            <div class="header-stat">
+                <span class="header-stat-icon">✦</span>
+                <span class="header-stat-value" id="headerRunes">0</span>
+            </div>
+            <div class="header-stat">
+                <span class="header-stat-icon">⚔️</span>
+                <span class="header-stat-value" id="headerSkills">0</span>
+            </div>
+        </div>
+    </header>
 
-<h1>Interview Prep – Mission Control</h1>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Profile Tab -->
+        <div class="tab-content active" id="profileTab">
+            <div class="profile-tab">
+                <div class="profile-hero">
+                    <div class="profile-emblem" id="profileLevel">1</div>
+                    <div class="profile-title" id="profileTitle">Hollow Developer</div>
+                    <div class="profile-subtitle" id="profileSubtitle">Lost, seeking purpose</div>
+                    
+                    <div class="xp-container">
+                        <div class="xp-bar" id="xpBar" style="width: 0%"></div>
+                    </div>
+                    <div class="xp-text" id="xpText">0 / 100 XP to next level</div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-icon">⚔️</div>
+                        <div class="stat-card-value" id="statSkills">0</div>
+                        <div class="stat-card-label">Skills</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">✦</div>
+                        <div class="stat-card-value" id="statRunes">0</div>
+                        <div class="stat-card-label">Runes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">💀</div>
+                        <div class="stat-card-value" id="statBosses">0</div>
+                        <div class="stat-card-label">Bosses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">🏆</div>
+                        <div class="stat-card-value" id="statAchievements">0</div>
+                        <div class="stat-card-label">Trophies</div>
+                    </div>
+                </div>
+                
+                <div class="streak-card">
+                    <div class="streak-flame">🔥</div>
+                    <div class="streak-info">
+                        <div class="streak-value" id="streakValue">0</div>
+                        <div class="streak-label">Day Streak</div>
+                    </div>
+                </div>
+                
+                <div class="daily-card">
+                    <div class="daily-header">
+                        <span style="font-size: 1.2rem;">🧪</span>
+                        <span class="daily-title">Daily Estus</span>
+                    </div>
+                    <div id="dailyGoals"></div>
+                </div>
+                
+                <div class="target-card">
+                    <div class="target-header">
+                        <span style="font-size: 1.2rem;">🎯</span>
+                        <span class="target-title">Target Date</span>
+                    </div>
+                    <input type="date" class="target-input" id="targetDate">
+                    <div class="target-countdown">
+                        <div class="countdown-number" id="countdownValue">--</div>
+                        <div class="countdown-label">Days<br>Remaining</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<!-- PROGRESS -->
-<div class="card">
-  <div style="display:flex;justify-content:space-between">
-    <div>Level <strong id="level">1</strong></div>
-    <div><strong id="xp">0</strong> XP</div>
-  </div>
-  <div class="progress" style="margin-top:8px">
-    <div class="progress-fill" id="xpFill"></div>
-  </div>
-</div>
+        <!-- Skills Tab -->
+        <div class="tab-content" id="skillsTab">
+            <div class="skills-tab">
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="skillSearch" placeholder="🔍 Search skills...">
+                </div>
+                
+                <div class="filter-pills">
+                    <div class="filter-pill active" data-filter="all">All</div>
+                    <div class="filter-pill" data-filter="incomplete">To Do</div>
+                    <div class="filter-pill" data-filter="completed">Done</div>
+                    <div class="filter-pill" data-filter="frontend">Frontend</div>
+                    <div class="filter-pill" data-filter="backend">Backend</div>
+                    <div class="filter-pill" data-filter="devops">DevOps</div>
+                </div>
+                
+                <div id="categoriesContainer"></div>
+            </div>
+        </div>
 
-<!-- TROPHIES -->
-<div class="card">
-  <h3 style="margin:0 0 10px">Achievements</h3>
-  <div class="trophy-grid" id="trophies"></div>
-</div>
+        <!-- Achievements Tab -->
+        <div class="tab-content" id="achievementsTab">
+            <div class="achievements-tab">
+                <div class="achievements-section-title">
+                    <span>🏆</span>
+                    <span>Achievements</span>
+                </div>
+                <div class="achievements-grid" id="achievementsGrid"></div>
+                
+                <div class="boss-section">
+                    <div class="achievements-section-title">
+                        <span>💀</span>
+                        <span>Bosses Vanquished</span>
+                    </div>
+                    <div id="bossContainer"></div>
+                </div>
+            </div>
+        </div>
+    </main>
 
-<!-- MISSIONS -->
-<div id="missions"></div>
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" data-tab="profileTab">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Profile</span>
+        </div>
+        <div class="nav-item" data-tab="skillsTab">
+            <span class="nav-icon">⚔️</span>
+            <span class="nav-label">Skills</span>
+        </div>
+        <div class="nav-item" data-tab="achievementsTab">
+            <span class="nav-icon">🏆</span>
+            <span class="nav-label">Trophies</span>
+        </div>
+    </nav>
 
-</div>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
-<script>
-const STORAGE="mission-control-v2";
+    <!-- Reset Modal -->
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <div class="modal-title">⚠️ Reset Progress?</div>
+            <p class="modal-text">This will reset ALL your progress. Your journey will begin anew. This cannot be undone.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" onclick="closeResetModal()">Cancel</button>
+                <button class="modal-btn primary" onclick="confirmReset()">Reset</button>
+            </div>
+        </div>
+    </div>
 
-/* MISSIONS (sample subset – expand freely) */
-const missions=[
-  {id:"rerender",title:"Stop Unnecessary Re-renders",category:"frontend",xp:20,subtasks:[
-    "Explain re-render triggers","Explain referential equality","Explain memo trade-offs"
-  ]},
-  {id:"state",title:"State Ownership",category:"frontend",xp:20,subtasks:[
-    "Colocation vs lifting","Global vs local state","Real example"
-  ]},
-  {id:"eventloop",title:"Event Loop Clarity",category:"js",xp:15,subtasks:[
-    "Call stack","Microtasks","Macrotasks","Promise order"
-  ]},
-  {id:"ai",title:"AI Usage as Senior",category:"ai",xp:20,subtasks:[
-    "Copilot usage","Review strategy","Failure examples"
-  ]},
-  {id:"boss",title:"FINAL BOSS: Interview Ready",category:"boss",xp:80,
-    requires:["rerender","state","eventloop","ai"],
-    subtasks:["Explain confidently","Handle follow-ups","No hesitation"]
-  }
-];
+    <script>
+        // ============================================
+        // SKILL DATA
+        // ============================================
+        const skillData = {
+            javascript: {
+                name: "JavaScript",
+                icon: "⚡",
+                group: "frontend",
+                boss: "Abyss Watcher of Event Loop",
+                subcategories: {
+                    "Fundamentals": [
+                        { name: "Variables & Data Types", level: "basic", runes: 10 },
+                        { name: "Functions & Closures", level: "basic", runes: 15 },
+                        { name: "Arrays & Objects", level: "basic", runes: 15 },
+                        { name: "DOM Manipulation", level: "basic", runes: 15 },
+                        { name: "ES6+ Syntax", level: "basic", runes: 15 },
+                        { name: "Destructuring", level: "basic", runes: 10 }
+                    ],
+                    "Intermediate": [
+                        { name: "Promises & Async/Await", level: "intermediate", runes: 25 },
+                        { name: "Event Loop", level: "intermediate", runes: 30 },
+                        { name: "Prototypes", level: "intermediate", runes: 25 },
+                        { name: "Error Handling", level: "intermediate", runes: 20 },
+                        { name: "ES Modules", level: "intermediate", runes: 20 },
+                        { name: "Regular Expressions", level: "intermediate", runes: 20 }
+                    ],
+                    "Advanced": [
+                        { name: "Generators", level: "advanced", runes: 35 },
+                        { name: "Proxies & Reflect", level: "advanced", runes: 35 },
+                        { name: "Memory Management", level: "advanced", runes: 40 },
+                        { name: "Web Workers", level: "advanced", runes: 35 }
+                    ],
+                    "Expert": [
+                        { name: "V8 Internals", level: "expert", runes: 60 },
+                        { name: "Performance Optimization", level: "expert", runes: 50 }
+                    ]
+                }
+            },
+            typescript: {
+                name: "TypeScript",
+                icon: "📘",
+                group: "frontend",
+                boss: "Nameless Type King",
+                subcategories: {
+                    "Basics": [
+                        { name: "Types & Interfaces", level: "basic", runes: 15 },
+                        { name: "Functions", level: "basic", runes: 15 },
+                        { name: "Enums", level: "basic", runes: 10 }
+                    ],
+                    "Intermediate": [
+                        { name: "Union & Intersection", level: "intermediate", runes: 25 },
+                        { name: "Type Guards", level: "intermediate", runes: 25 },
+                        { name: "Generics", level: "intermediate", runes: 30 }
+                    ],
+                    "Advanced": [
+                        { name: "Advanced Generics", level: "advanced", runes: 40 },
+                        { name: "Utility Types", level: "advanced", runes: 35 },
+                        { name: "Mapped Types", level: "advanced", runes: 40 },
+                        { name: "Decorators", level: "advanced", runes: 35 }
+                    ],
+                    "Expert": [
+                        { name: "Compiler API", level: "expert", runes: 60 },
+                        { name: "Type-Safe Libraries", level: "expert", runes: 55 }
+                    ]
+                }
+            },
+            react: {
+                name: "React",
+                icon: "⚛️",
+                group: "frontend",
+                boss: "Soul of Virtual DOM",
+                subcategories: {
+                    "Core": [
+                        { name: "JSX & Components", level: "basic", runes: 15 },
+                        { name: "Props & State", level: "basic", runes: 15 },
+                        { name: "Event Handling", level: "basic", runes: 10 },
+                        { name: "useState", level: "basic", runes: 15 },
+                        { name: "useEffect", level: "basic", runes: 20 }
+                    ],
+                    "Hooks": [
+                        { name: "useRef", level: "intermediate", runes: 20 },
+                        { name: "useContext", level: "intermediate", runes: 25 },
+                        { name: "useReducer", level: "intermediate", runes: 25 },
+                        { name: "Custom Hooks", level: "intermediate", runes: 30 }
+                    ],
+                    "Patterns": [
+                        { name: "React Router", level: "intermediate", runes: 25 },
+                        { name: "Error Boundaries", level: "intermediate", runes: 25 },
+                        { name: "Performance Hooks", level: "advanced", runes: 35 },
+                        { name: "Compound Components", level: "advanced", runes: 40 }
+                    ],
+                    "Expert": [
+                        { name: "Server Components", level: "expert", runes: 55 },
+                        { name: "Concurrent Mode", level: "expert", runes: 55 },
+                        { name: "Reconciliation", level: "expert", runes: 60 }
+                    ]
+                }
+            },
+            state: {
+                name: "State Management",
+                icon: "🔄",
+                group: "frontend",
+                boss: "Pontiff of Global State",
+                subcategories: {
+                    "Core": [
+                        { name: "Context API", level: "basic", runes: 20 },
+                        { name: "Redux Basics", level: "intermediate", runes: 30 },
+                        { name: "Redux Toolkit", level: "intermediate", runes: 30 },
+                        { name: "Zustand", level: "intermediate", runes: 25 },
+                        { name: "TanStack Query", level: "advanced", runes: 40 }
+                    ]
+                }
+            },
+            nextjs: {
+                name: "Next.js",
+                icon: "▲",
+                group: "frontend",
+                boss: "Dancer of Server Components",
+                subcategories: {
+                    "Core": [
+                        { name: "Pages & Routing", level: "basic", runes: 15 },
+                        { name: "SSG & SSR", level: "intermediate", runes: 30 },
+                        { name: "API Routes", level: "intermediate", runes: 25 },
+                        { name: "App Router", level: "intermediate", runes: 30 }
+                    ],
+                    "Advanced": [
+                        { name: "Server Components", level: "advanced", runes: 40 },
+                        { name: "Server Actions", level: "advanced", runes: 40 },
+                        { name: "Middleware", level: "advanced", runes: 40 },
+                        { name: "Caching", level: "expert", runes: 55 }
+                    ]
+                }
+            },
+            css: {
+                name: "CSS & Styling",
+                icon: "🎨",
+                group: "frontend",
+                boss: "High Lord of Flexbox",
+                subcategories: {
+                    "Layout": [
+                        { name: "Flexbox", level: "basic", runes: 15 },
+                        { name: "Grid", level: "intermediate", runes: 25 },
+                        { name: "Responsive Design", level: "basic", runes: 15 }
+                    ],
+                    "Tools": [
+                        { name: "Tailwind CSS", level: "intermediate", runes: 25 },
+                        { name: "Animations", level: "intermediate", runes: 25 },
+                        { name: "Framer Motion", level: "advanced", runes: 40 }
+                    ],
+                    "Expert": [
+                        { name: "Design Systems", level: "expert", runes: 55 },
+                        { name: "Design Tokens", level: "expert", runes: 50 }
+                    ]
+                }
+            },
+            testing: {
+                name: "Testing",
+                icon: "🧪",
+                group: "frontend",
+                boss: "Tester of Broken Builds",
+                subcategories: {
+                    "Core": [
+                        { name: "Jest", level: "basic", runes: 15 },
+                        { name: "React Testing Library", level: "intermediate", runes: 30 },
+                        { name: "Cypress", level: "intermediate", runes: 30 },
+                        { name: "Playwright", level: "advanced", runes: 40 }
+                    ]
+                }
+            },
+            performance: {
+                name: "Performance",
+                icon: "⚡",
+                group: "frontend",
+                boss: "Speed Demon",
+                subcategories: {
+                    "Core": [
+                        { name: "Lighthouse", level: "basic", runes: 15 },
+                        { name: "Code Splitting", level: "intermediate", runes: 30 },
+                        { name: "Core Web Vitals", level: "advanced", runes: 45 },
+                        { name: "PWA", level: "expert", runes: 55 }
+                    ]
+                }
+            },
+            a11y: {
+                name: "Accessibility",
+                icon: "♿",
+                group: "frontend",
+                boss: "Guardian of Inclusion",
+                subcategories: {
+                    "Core": [
+                        { name: "Semantic HTML", level: "basic", runes: 15 },
+                        { name: "ARIA", level: "intermediate", runes: 30 },
+                        { name: "WCAG 2.1", level: "advanced", runes: 45 },
+                        { name: "Screen Readers", level: "advanced", runes: 40 }
+                    ]
+                }
+            },
+            python: {
+                name: "Python",
+                icon: "🐍",
+                group: "backend",
+                boss: "Pontiff of Pythonic Ways",
+                subcategories: {
+                    "Core": [
+                        { name: "Syntax & Types", level: "basic", runes: 10 },
+                        { name: "Functions", level: "basic", runes: 15 },
+                        { name: "OOP", level: "intermediate", runes: 25 },
+                        { name: "Decorators", level: "advanced", runes: 40 },
+                        { name: "Asyncio", level: "advanced", runes: 45 }
+                    ]
+                }
+            },
+            django: {
+                name: "Django",
+                icon: "🎸",
+                group: "backend",
+                boss: "Vordt of the ORM",
+                subcategories: {
+                    "Core": [
+                        { name: "Models & ORM", level: "basic", runes: 15 },
+                        { name: "Views & URLs", level: "basic", runes: 15 },
+                        { name: "Authentication", level: "intermediate", runes: 30 },
+                        { name: "DRF", level: "intermediate", runes: 30 }
+                    ],
+                    "Advanced": [
+                        { name: "ORM Optimization", level: "advanced", runes: 45 },
+                        { name: "Celery", level: "advanced", runes: 45 },
+                        { name: "Channels", level: "expert", runes: 55 }
+                    ]
+                }
+            },
+            nodejs: {
+                name: "Node.js",
+                icon: "💚",
+                group: "backend",
+                boss: "Devourer of Callbacks",
+                subcategories: {
+                    "Core": [
+                        { name: "Modules & npm", level: "basic", runes: 15 },
+                        { name: "Express.js", level: "intermediate", runes: 25 },
+                        { name: "Authentication", level: "intermediate", runes: 35 },
+                        { name: "Streams", level: "advanced", runes: 40 },
+                        { name: "NestJS", level: "expert", runes: 55 }
+                    ]
+                }
+            },
+            databases: {
+                name: "Databases",
+                icon: "🗄️",
+                group: "backend",
+                boss: "Keeper of Schema",
+                subcategories: {
+                    "SQL": [
+                        { name: "SQL Basics", level: "basic", runes: 15 },
+                        { name: "JOINs", level: "basic", runes: 20 },
+                        { name: "Indexing", level: "intermediate", runes: 30 },
+                        { name: "Query Optimization", level: "advanced", runes: 45 }
+                    ],
+                    "NoSQL": [
+                        { name: "MongoDB", level: "intermediate", runes: 35 },
+                        { name: "Redis", level: "advanced", runes: 40 }
+                    ]
+                }
+            },
+            api: {
+                name: "API Design",
+                icon: "🔌",
+                group: "backend",
+                boss: "Architect of Endpoints",
+                subcategories: {
+                    "Core": [
+                        { name: "REST Basics", level: "basic", runes: 15 },
+                        { name: "Pagination", level: "intermediate", runes: 25 },
+                        { name: "GraphQL", level: "advanced", runes: 40 },
+                        { name: "tRPC", level: "advanced", runes: 40 }
+                    ]
+                }
+            },
+            aws: {
+                name: "AWS",
+                icon: "☁️",
+                group: "devops",
+                boss: "Knight of the Cloud",
+                subcategories: {
+                    "Core": [
+                        { name: "IAM", level: "basic", runes: 20 },
+                        { name: "S3", level: "basic", runes: 20 },
+                        { name: "EC2", level: "basic", runes: 20 },
+                        { name: "Lambda", level: "intermediate", runes: 30 }
+                    ],
+                    "Advanced": [
+                        { name: "ECS", level: "advanced", runes: 45 },
+                        { name: "DynamoDB", level: "advanced", runes: 45 },
+                        { name: "EKS", level: "expert", runes: 60 }
+                    ]
+                }
+            },
+            docker: {
+                name: "Containers",
+                icon: "🐳",
+                group: "devops",
+                boss: "Leviathan of Docker",
+                subcategories: {
+                    "Core": [
+                        { name: "Docker Basics", level: "basic", runes: 20 },
+                        { name: "Docker Compose", level: "intermediate", runes: 30 },
+                        { name: "K8s Fundamentals", level: "advanced", runes: 50 },
+                        { name: "Helm Charts", level: "expert", runes: 55 }
+                    ]
+                }
+            },
+            cicd: {
+                name: "CI/CD",
+                icon: "🚀",
+                group: "devops",
+                boss: "Gatekeeper of Deploy",
+                subcategories: {
+                    "Core": [
+                        { name: "Git Basics", level: "basic", runes: 10 },
+                        { name: "Git Flow", level: "intermediate", runes: 25 },
+                        { name: "GitHub Actions", level: "intermediate", runes: 30 },
+                        { name: "Blue/Green Deploy", level: "expert", runes: 50 }
+                    ]
+                }
+            },
+            systemDesign: {
+                name: "System Design",
+                icon: "🏗️",
+                group: "devops",
+                boss: "Architect Supreme",
+                subcategories: {
+                    "Core": [
+                        { name: "Load Balancing", level: "intermediate", runes: 30 },
+                        { name: "Caching", level: "intermediate", runes: 30 },
+                        { name: "CAP Theorem", level: "advanced", runes: 45 },
+                        { name: "Microservices", level: "advanced", runes: 45 }
+                    ],
+                    "Expert": [
+                        { name: "Event Sourcing", level: "expert", runes: 60 },
+                        { name: "CQRS", level: "expert", runes: 55 },
+                        { name: "DDD", level: "expert", runes: 65 }
+                    ]
+                }
+            },
+            security: {
+                name: "Security",
+                icon: "🔒",
+                group: "devops",
+                boss: "Sentinel of Secrets",
+                subcategories: {
+                    "Core": [
+                        { name: "HTTPS/TLS", level: "basic", runes: 15 },
+                        { name: "XSS/CSRF", level: "intermediate", runes: 30 },
+                        { name: "OAuth2", level: "advanced", runes: 45 },
+                        { name: "OWASP Top 10", level: "advanced", runes: 50 }
+                    ]
+                }
+            },
+            leadership: {
+                name: "Leadership",
+                icon: "👑",
+                group: "devops",
+                boss: "Soul of Cinder",
+                subcategories: {
+                    "Core": [
+                        { name: "Code Reviews", level: "intermediate", runes: 30 },
+                        { name: "Technical Writing", level: "advanced", runes: 40 },
+                        { name: "Mentoring", level: "advanced", runes: 45 },
+                        { name: "Leading Projects", level: "expert", runes: 60 }
+                    ]
+                }
+            },
+            ai: {
+                name: "AI/ML",
+                icon: "🤖",
+                group: "devops",
+                boss: "Herald of the Future",
+                subcategories: {
+                    "Core": [
+                        { name: "LLM APIs", level: "intermediate", runes: 35 },
+                        { name: "Prompt Engineering", level: "intermediate", runes: 35 },
+                        { name: "RAG", level: "advanced", runes: 50 },
+                        { name: "LangChain", level: "advanced", runes: 50 }
+                    ]
+                }
+            }
+        };
 
-/* TROPHIES */
-const trophiesDef=[
-  {id:"first",icon:"🏁",label:"First Mission",check:s=>s.missions>=1},
-  {id:"ten",icon:"🔥",label:"10 Missions Done",check:s=>s.missions>=10},
-  {id:"frontend",icon:"🧠",label:"Frontend Core",check:s=>s.frontend>=2},
-  {id:"ai",icon:"🤖",label:"AI Ready",check:s=>s.ai>=1},
-  {id:"final",icon:"🏆",label:"Interview Ready",check:s=>s.boss}
-];
+        // ============================================
+        // ACHIEVEMENTS
+        // ============================================
+        const achievements = [
+            { id: "first_flame", name: "First Flame", desc: "Complete 1 skill", condition: (s) => s.totalCompleted >= 1, icon: "🔥" },
+            { id: "ember_restored", name: "Ember Restored", desc: "Complete 10 skills", condition: (s) => s.totalCompleted >= 10, icon: "✨" },
+            { id: "undead_warrior", name: "Undead Warrior", desc: "Complete 25 skills", condition: (s) => s.totalCompleted >= 25, icon: "⚔️" },
+            { id: "chosen_undead", name: "Chosen Undead", desc: "Complete 50 skills", condition: (s) => s.totalCompleted >= 50, icon: "🗡️" },
+            { id: "ashen_one", name: "Ashen One", desc: "Complete 100 skills", condition: (s) => s.totalCompleted >= 100, icon: "🛡️" },
+            { id: "lord_of_cinder", name: "Lord of Cinder", desc: "Complete 150 skills", condition: (s) => s.totalCompleted >= 150, icon: "👑" },
+            { id: "streak_3", name: "Kindling", desc: "3 day streak", condition: (s) => s.streak >= 3, icon: "🕯️" },
+            { id: "streak_7", name: "Bonfire Keeper", desc: "7 day streak", condition: (s) => s.streak >= 7, icon: "🔥" },
+            { id: "streak_30", name: "Eternal Flame", desc: "30 day streak", condition: (s) => s.streak >= 30, icon: "☀️" },
+            { id: "rune_1000", name: "Rune Collector", desc: "1,000 runes", condition: (s) => s.totalRunes >= 1000, icon: "💰" },
+            { id: "rune_5000", name: "Rune Hoarder", desc: "5,000 runes", condition: (s) => s.totalRunes >= 5000, icon: "💎" },
+            { id: "boss_1", name: "Boss Slayer", desc: "Defeat 1 boss", condition: (s) => s.bossesDefeated >= 1, icon: "💀" },
+            { id: "boss_5", name: "Champion", desc: "Defeat 5 bosses", condition: (s) => s.bossesDefeated >= 5, icon: "🏅" }
+        ];
 
-const state=JSON.parse(localStorage.getItem(STORAGE))||{};
-function save(){localStorage.setItem(STORAGE,JSON.stringify(state));}
+        // ============================================
+        // LEVELS
+        // ============================================
+        const levels = [
+            { level: 1, title: "Hollow Developer", subtitle: "Lost, seeking purpose", xpRequired: 0 },
+            { level: 2, title: "Hollow Developer", subtitle: "A faint spark", xpRequired: 100 },
+            { level: 3, title: "Hollow Developer", subtitle: "Growing", xpRequired: 250 },
+            { level: 5, title: "Undead Developer", subtitle: "Beginning to understand", xpRequired: 500 },
+            { level: 7, title: "Undead Developer", subtitle: "Skills sharpening", xpRequired: 900 },
+            { level: 10, title: "Ember Developer", subtitle: "Power growing", xpRequired: 1500 },
+            { level: 12, title: "Ember Developer", subtitle: "Respected", xpRequired: 2200 },
+            { level: 15, title: "Knight Developer", subtitle: "Proven warrior", xpRequired: 3200 },
+            { level: 18, title: "Knight Developer", subtitle: "Inspiring", xpRequired: 4500 },
+            { level: 20, title: "Lord Developer", subtitle: "Commands respect", xpRequired: 6000 },
+            { level: 25, title: "Ashen One", subtitle: "Legendary", xpRequired: 9000 },
+            { level: 30, title: "Elden Lord", subtitle: "Transcended", xpRequired: 15000 }
+        ];
 
-function missionDone(m){
-  return m.subtasks.every((_,i)=>state[`${m.id}-s${i}`]);
-}
+        // ============================================
+        // STATE
+        // ============================================
+        let state = {
+            completedSkills: {},
+            dailyGoals: [],
+            streak: 0,
+            lastActiveDate: null,
+            targetDate: null,
+            unlockedAchievements: [],
+            expandedCategories: {}
+        };
 
-function canBoss(m){
-  return !m.requires||m.requires.every(id=>{
-    const mm=missions.find(x=>x.id===id);
-    return missionDone(mm);
-  });
-}
+        // ============================================
+        // UTILS
+        // ============================================
+        function saveState() {
+            localStorage.setItem('developerJourney', JSON.stringify(state));
+        }
 
-function stats(){
-  let s={missions:0,frontend:0,ai:0,boss:false};
-  missions.forEach(m=>{
-    if(missionDone(m)){
-      s.missions++;
-      if(m.category==="frontend") s.frontend++;
-      if(m.category==="ai") s.ai++;
-      if(m.category==="boss") s.boss=true;
-    }
-  });
-  return s;
-}
+        function loadState() {
+            const saved = localStorage.getItem('developerJourney');
+            if (saved) state = { ...state, ...JSON.parse(saved) };
+            
+            const today = new Date().toDateString();
+            if (state.lastActiveDate) {
+                const last = new Date(state.lastActiveDate);
+                const diff = Math.floor((new Date(today) - last) / 86400000);
+                if (diff > 1) state.streak = 0;
+            }
+            
+            if (state.lastActiveDate !== today) {
+                state.dailyGoals = [
+                    { text: "Complete 1 skill", completed: false },
+                    { text: "Review concepts", completed: false },
+                    { text: "Practice coding", completed: false }
+                ];
+            }
+            
+            state.lastActiveDate = today;
+            saveState();
+        }
 
-function render(){
-  const mEl=document.getElementById("missions");
-  mEl.innerHTML="";
-  let xp=0;
+        function getSkillId(cat, sub, name) {
+            return `${cat}::${sub}::${name}`;
+        }
 
-  missions.forEach(m=>{
-    const done=missionDone(m);
-    if(done) xp+=m.xp;
+        function calculateStats() {
+            let totalSkills = 0, totalCompleted = 0, totalRunes = 0, bossesDefeated = 0;
 
-    const div=document.createElement("div");
-    div.className="mission"+(done?" completed":"");
+            for (const [catId, cat] of Object.entries(skillData)) {
+                let catCompleted = 0, catTotal = 0;
+                for (const [sub, skills] of Object.entries(cat.subcategories)) {
+                    for (const skill of skills) {
+                        totalSkills++; catTotal++;
+                        if (state.completedSkills[getSkillId(catId, sub, skill.name)]) {
+                            totalCompleted++; catCompleted++;
+                            totalRunes += skill.runes;
+                        }
+                    }
+                }
+                if (catCompleted === catTotal && catTotal > 0) bossesDefeated++;
+            }
 
-    let subs="";
-    m.subtasks.forEach((t,i)=>{
-      const k=`${m.id}-s${i}`;
-      subs+=`
-        <div class="subtask">
-          <input type="checkbox" ${state[k]?"checked":""}/>
-          <label>${t}</label>
-        </div>`;
-    });
+            let level = 1;
+            for (let i = levels.length - 1; i >= 0; i--) {
+                if (totalRunes >= levels[i].xpRequired) { level = levels[i].level; break; }
+            }
 
-    div.innerHTML=`
-      <div class="mission-title">${m.title}</div>
-      <span class="badge ${m.category}">${m.category.toUpperCase()}</span>
-      <div class="subtasks">${subs}</div>
-      <div class="actions">
-        <span>+${m.xp} XP</span>
-        <button ${done?"disabled":""}>Complete Mission</button>
-      </div>
-    `;
+            return { totalSkills, totalCompleted, totalRunes, level, bossesDefeated, streak: state.streak };
+        }
 
-    div.querySelectorAll("input").forEach((cb,i)=>{
-      cb.onchange=e=>{
-        state[`${m.id}-s${i}`]=e.target.checked;
-        save(); render();
-      };
-    });
+        function getLevelInfo(xp) {
+            let curr = levels[0], next = levels[1];
+            for (let i = 0; i < levels.length - 1; i++) {
+                if (xp >= levels[i].xpRequired && xp < levels[i + 1].xpRequired) {
+                    curr = levels[i]; next = levels[i + 1]; break;
+                }
+            }
+            if (xp >= levels[levels.length - 1].xpRequired) { curr = levels[levels.length - 1]; next = null; }
+            
+            const into = xp - curr.xpRequired;
+            const forNext = next ? next.xpRequired - curr.xpRequired : 0;
+            const progress = next ? (into / forNext) * 100 : 100;
+            return { curr, next, progress, into, forNext };
+        }
 
-    div.querySelector("button").onclick=()=>{
-      if(m.category==="boss"&&!canBoss(m)){
-        alert("Complete prerequisites first");
-        return;
-      }
-      m.subtasks.forEach((_,i)=>state[`${m.id}-s${i}`]=true);
-      save(); render();
-    };
+        // ============================================
+        // RENDER
+        // ============================================
+        function renderAll() {
+            const stats = calculateStats();
+            const lvl = getLevelInfo(stats.totalRunes);
+            
+            // Header
+            document.getElementById('headerLevel').textContent = lvl.curr.level;
+            document.getElementById('headerTitle').textContent = lvl.curr.title;
+            document.getElementById('headerSubtitle').textContent = lvl.curr.subtitle;
+            document.getElementById('headerRunes').textContent = stats.totalRunes.toLocaleString();
+            document.getElementById('headerSkills').textContent = stats.totalCompleted;
+            
+            // Profile
+            document.getElementById('profileLevel').textContent = lvl.curr.level;
+            document.getElementById('profileTitle').textContent = lvl.curr.title;
+            document.getElementById('profileSubtitle').textContent = lvl.curr.subtitle;
+            document.getElementById('xpBar').style.width = `${lvl.progress}%`;
+            document.getElementById('xpText').textContent = lvl.next 
+                ? `${lvl.into} / ${lvl.forNext} XP to Level ${lvl.next.level}`
+                : 'MAX LEVEL';
+            
+            document.getElementById('statSkills').textContent = stats.totalCompleted;
+            document.getElementById('statRunes').textContent = stats.totalRunes.toLocaleString();
+            document.getElementById('statBosses').textContent = stats.bossesDefeated;
+            document.getElementById('statAchievements').textContent = state.unlockedAchievements.length;
+            document.getElementById('streakValue').textContent = stats.streak;
+            
+            // Daily Goals
+            document.getElementById('dailyGoals').innerHTML = state.dailyGoals.map((g, i) => `
+                <div class="goal-item ${g.completed ? 'completed' : ''}" onclick="toggleGoal(${i})">
+                    <div class="goal-checkbox"></div>
+                    <span class="goal-text">${g.text}</span>
+                </div>
+            `).join('');
+            
+            // Target
+            if (state.targetDate) document.getElementById('targetDate').value = state.targetDate;
+            updateCountdown();
+            
+            // Categories
+            renderCategories(currentFilter, document.getElementById('skillSearch')?.value || '');
+            
+            // Achievements
+            renderAchievements();
+            renderBosses();
+        }
 
-    mEl.appendChild(div);
-  });
+        let currentFilter = 'all';
 
-  // XP + Level
-  document.getElementById("xp").textContent=xp;
-  document.getElementById("level").textContent=Math.floor(xp/50)+1;
-  document.getElementById("xpFill").style.width=(xp%50)*2+"%";
+        function renderCategories(filter, search) {
+            const container = document.getElementById('categoriesContainer');
+            const searchL = search.toLowerCase();
+            let html = '';
 
-  // TROPHIES
-  const tEl=document.getElementById("trophies");
-  tEl.innerHTML="";
-  const s=stats();
-  trophiesDef.forEach(t=>{
-    const unlocked=t.check(s);
-    const d=document.createElement("div");
-    d.className="trophy "+(unlocked?"unlocked":"locked");
-    d.textContent=`${t.icon} ${t.label}`;
-    tEl.appendChild(d);
-  });
-}
+            for (const [catId, cat] of Object.entries(skillData)) {
+                if (filter === 'frontend' && cat.group !== 'frontend') continue;
+                if (filter === 'backend' && cat.group !== 'backend') continue;
+                if (filter === 'devops' && cat.group !== 'devops') continue;
 
-render();
-</script>
+                let catTotal = 0, catCompleted = 0;
+                let filteredSubs = {};
+
+                for (const [sub, skills] of Object.entries(cat.subcategories)) {
+                    const filtered = skills.filter(s => {
+                        const id = getSkillId(catId, sub, s.name);
+                        const done = state.completedSkills[id];
+                        const match = !search || s.name.toLowerCase().includes(searchL);
+                        if (!match) return false;
+                        if (filter === 'completed' && !done) return false;
+                        if (filter === 'incomplete' && done) return false;
+                        return true;
+                    });
+                    if (filtered.length) filteredSubs[sub] = filtered;
+                    skills.forEach(s => {
+                        catTotal++;
+                        if (state.completedSkills[getSkillId(catId, sub, s.name)]) catCompleted++;
+                    });
+                }
+
+                if (!Object.keys(filteredSubs).length && search) continue;
+
+                const progress = catTotal ? (catCompleted / catTotal) * 100 : 0;
+                const defeated = catCompleted === catTotal && catTotal > 0;
+                const expanded = state.expandedCategories[catId];
+
+                html += `
+                    <div class="category-card ${expanded ? 'expanded' : ''}" data-cat="${catId}">
+                        <div class="category-header" onclick="toggleCategory('${catId}')">
+                            <div class="category-icon">${cat.icon}</div>
+                            <div class="category-info">
+                                <div class="category-name">${cat.name}</div>
+                                <div class="category-progress-bar">
+                                    <div class="category-progress-fill" style="width:${progress}%"></div>
+                                </div>
+                                <div class="category-meta">
+                                    <span class="category-count">${catCompleted}/${catTotal}</span>
+                                    <span class="category-boss-badge ${defeated ? 'defeated' : ''}">${defeated ? '💀 SLAIN' : cat.boss}</span>
+                                </div>
+                            </div>
+                            <div class="category-toggle">▼</div>
+                        </div>
+                        <div class="skills-container">
+                            ${Object.entries(search ? filteredSubs : cat.subcategories).map(([sub, skills]) => `
+                                <div class="subcategory">
+                                    <div class="subcategory-title"><span>📚</span>${sub}</div>
+                                    ${skills.map(s => {
+                                        const id = getSkillId(catId, sub, s.name);
+                                        const done = state.completedSkills[id];
+                                        return `
+                                            <div class="skill-item ${done ? 'completed' : ''}" onclick="toggleSkill('${catId}','${sub}','${s.name.replace(/'/g, "\\'")}')">
+                                                <div class="skill-checkbox"></div>
+                                                <div class="skill-info">
+                                                    <div class="skill-name">${s.name}</div>
+                                                    <div class="skill-meta">
+                                                        <span class="skill-level ${s.level}">${s.level}</span>
+                                                        <span class="skill-runes">✦ ${s.runes}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function renderAchievements() {
+            document.getElementById('achievementsGrid').innerHTML = achievements.map(a => {
+                const unlocked = state.unlockedAchievements.includes(a.id);
+                return `
+                    <div class="achievement-card ${unlocked ? 'unlocked' : 'locked'}">
+                        <div class="achievement-icon">${unlocked ? a.icon : '🔒'}</div>
+                        <div class="achievement-name">${unlocked ? a.name : '???'}</div>
+                        <div class="achievement-desc">${a.desc}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderBosses() {
+            document.getElementById('bossContainer').innerHTML = Object.entries(skillData).map(([catId, cat]) => {
+                let total = 0, completed = 0;
+                for (const [sub, skills] of Object.entries(cat.subcategories)) {
+                    skills.forEach(s => {
+                        total++;
+                        if (state.completedSkills[getSkillId(catId, sub, s.name)]) completed++;
+                    });
+                }
+                const defeated = completed === total && total > 0;
+                return `
+                    <div class="boss-card ${defeated ? 'defeated' : 'locked'}">
+                        <div class="boss-icon">${cat.icon}</div>
+                        <div class="boss-info">
+                            <div class="boss-name">${cat.boss}</div>
+                            <div class="boss-category">${cat.name} (${completed}/${total})</div>
+                        </div>
+                        <div class="boss-status">${defeated ? 'SLAIN' : 'ALIVE'}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============================================
+        // INTERACTIONS
+        // ============================================
+        function toggleCategory(catId) {
+            state.expandedCategories[catId] = !state.expandedCategories[catId];
+            saveState();
+            renderCategories(currentFilter, document.getElementById('skillSearch').value);
+        }
+
+        function toggleSkill(catId, sub, name) {
+            const id = getSkillId(catId, sub, name);
+            const was = state.completedSkills[id];
+            
+            if (was) {
+                delete state.completedSkills[id];
+            } else {
+                state.completedSkills[id] = true;
+                const today = new Date().toDateString();
+                const yesterday = new Date(Date.now() - 86400000).toDateString();
+                if (state.lastActiveDate === yesterday || !state.lastActiveDate) state.streak++;
+                else if (state.lastActiveDate !== today) state.streak = 1;
+                state.lastActiveDate = today;
+
+                const skill = skillData[catId].subcategories[sub].find(s => s.name === name);
+                showToast(`+${skill.runes} Runes`, name);
+            }
+            
+            saveState();
+            checkAchievements();
+            checkBoss(catId);
+            renderAll();
+        }
+
+        function toggleGoal(i) {
+            state.dailyGoals[i].completed = !state.dailyGoals[i].completed;
+            saveState();
+            renderAll();
+        }
+
+        function updateCountdown() {
+            const el = document.getElementById('countdownValue');
+            if (state.targetDate) {
+                const diff = Math.ceil((new Date(state.targetDate) - new Date()) / 86400000);
+                el.textContent = diff > 0 ? diff : 0;
+            } else {
+                el.textContent = '--';
+            }
+        }
+
+        // ============================================
+        // NOTIFICATIONS
+        // ============================================
+        function showToast(title, subtitle) {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.innerHTML = `<div class="toast-icon">✦</div><div class="toast-content"><div class="toast-title">${title}</div><div class="toast-subtitle">${subtitle}</div></div>`;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 2700);
+        }
+
+        function showBanner(icon, title, subtitle) {
+            document.querySelectorAll('.achievement-banner').forEach(b => b.remove());
+            const b = document.createElement('div');
+            b.className = 'achievement-banner';
+            b.innerHTML = `<div class="banner-icon">${icon}</div><div class="banner-title">${title}</div><div class="banner-subtitle">${subtitle}</div>`;
+            document.body.appendChild(b);
+            setTimeout(() => b.remove(), 3000);
+        }
+
+        function checkAchievements() {
+            const stats = calculateStats();
+            achievements.forEach(a => {
+                if (!state.unlockedAchievements.includes(a.id) && a.condition(stats)) {
+                    state.unlockedAchievements.push(a.id);
+                    showBanner(a.icon, 'ACHIEVEMENT UNLOCKED', a.name);
+                }
+            });
+            saveState();
+        }
+
+        function checkBoss(catId) {
+            const cat = skillData[catId];
+            let total = 0, completed = 0;
+            for (const [sub, skills] of Object.entries(cat.subcategories)) {
+                skills.forEach(s => {
+                    total++;
+                    if (state.completedSkills[getSkillId(catId, sub, s.name)]) completed++;
+                });
+            }
+            if (completed === total && total > 0) {
+                const bossId = `boss_${catId}`;
+                if (!state.unlockedAchievements.includes(bossId)) {
+                    state.unlockedAchievements.push(bossId);
+                    showBanner('💀', 'BOSS VANQUISHED', cat.boss);
+                }
+            }
+        }
+
+        // ============================================
+        // NAVIGATION
+        // ============================================
+        function setupNav() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                    item.classList.add('active');
+                    document.getElementById(item.dataset.tab).classList.add('active');
+                });
+            });
+        }
+
+        function setupFilters() {
+            document.querySelectorAll('.filter-pill').forEach(pill => {
+                pill.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    currentFilter = pill.dataset.filter;
+                    renderCategories(currentFilter, document.getElementById('skillSearch').value);
+                });
+            });
+        }
+
+        function setupSearch() {
+            document.getElementById('skillSearch').addEventListener('input', e => {
+                renderCategories(currentFilter, e.target.value);
+            });
+        }
+
+        function setupTarget() {
+            document.getElementById('targetDate').addEventListener('change', e => {
+                state.targetDate = e.target.value;
+                saveState();
+                updateCountdown();
+            });
+        }
+
+        // ============================================
+        // MODAL
+        // ============================================
+        function openResetModal() {
+            document.getElementById('resetModal').classList.add('active');
+        }
+        function closeResetModal() {
+            document.getElementById('resetModal').classList.remove('active');
+        }
+        function confirmReset() {
+            localStorage.removeItem('developerJourney');
+            location.reload();
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
+        function init() {
+            loadState();
+            renderAll();
+            setupNav();
+            setupFilters();
+            setupSearch();
+            setupTarget();
+            checkAchievements();
+            
+            // Long press on emblem for reset
+            let pressTimer;
+            document.querySelector('.profile-emblem').addEventListener('touchstart', () => {
+                pressTimer = setTimeout(openResetModal, 2000);
+            });
+            document.querySelector('.profile-emblem').addEventListener('touchend', () => {
+                clearTimeout(pressTimer);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>
