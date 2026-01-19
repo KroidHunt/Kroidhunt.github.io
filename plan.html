@@ -51,18 +51,19 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        html, body {
+        html {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-darkest);
             color: var(--text-primary);
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
-            overflow-x: hidden;
-            overscroll-behavior-y: contain;
+            height: 100%;
         }
         
         body {
+            min-height: 100%;
             padding-bottom: calc(var(--nav-height) + var(--safe-bottom));
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         /* Scrollbar - thin for mobile */
@@ -165,15 +166,19 @@
         .main-content {
             padding-top: calc(var(--header-height) + var(--safe-top));
             min-height: 100vh;
+            position: relative;
+            overflow: visible;
         }
         
         .tab-content {
             display: none;
             animation: fadeIn 0.3s ease;
+            overflow: visible;
         }
         
         .tab-content.active {
             display: block;
+            overflow: visible;
         }
         
         @keyframes fadeIn {
@@ -186,6 +191,7 @@
            ============================================ */
         .profile-tab {
             padding: 16px;
+            padding-bottom: 20px;
         }
         
         .profile-hero {
@@ -480,6 +486,7 @@
            ============================================ */
         .skills-tab {
             padding: 12px;
+            padding-bottom: 20px;
         }
         
         /* Search Bar */
@@ -787,6 +794,7 @@
            ============================================ */
         .achievements-tab {
             padding: 12px;
+            padding-bottom: 20px;
         }
         
         .achievements-section-title {
